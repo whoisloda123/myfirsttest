@@ -1,7 +1,9 @@
 package com.liucan.controller;
 
+import com.liucan.config.DataSourceConfig;
 import com.liucan.domain.Person;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,9 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
  * @Description:
  */
 @RestController
-public class HelloWorldController {
+@RequestMapping("/bootlearn")
+public class MyRestController {
     @Autowired
     private Person person;
+    @Autowired
+    private DataSourceConfig dataSourceConfig;
 
     @RequestMapping("/hello")
     public String index() {

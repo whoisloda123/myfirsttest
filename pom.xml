@@ -11,6 +11,8 @@
     <name>boot</name>
     <description>Demo project for Spring Boot</description>
 
+    <!--spring-boot-starter-parent是一个特殊的starter,
+        它用来提供相关的Maven默认依赖，使用它之后，常用的包依赖可以省去version标签-->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -49,6 +51,13 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!--configuration配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
     </dependencies>
