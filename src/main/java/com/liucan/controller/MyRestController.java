@@ -1,6 +1,7 @@
 package com.liucan.controller;
 
 import com.liucan.Service.UserInfoJdbcTemplate;
+import com.liucan.Service.UserInfoMybatis;
 import com.liucan.common.response.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,10 +18,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class MyRestController {
     @Autowired
     private UserInfoJdbcTemplate userInfoJdbcTemplate;
+    @Autowired
+    private UserInfoMybatis userInfoMybatis;
 
     @RequestMapping("/find_name")
     public CommonResponse findName(@RequestParam("user_id") Integer userId) {
         return CommonResponse.ok(userInfoJdbcTemplate.queryUser(userId));
+    }
+
+    @RequestMapping("/find_name1")
+    public CommonResponse findName1(@RequestParam("user_id") Integer userId) {
+        return userInfoMybatis.getName(userId);
+    }
+
+    @RequestMapping("/find_phone")
+    public CommonResponse findPhone(@RequestParam("user_id") Integer userId) {
+        return userInfoMybatis.getUserPhone(userId);
     }
 }
 
