@@ -1,6 +1,9 @@
 package com.liucan;
 
-import org.junit.Test;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -8,9 +11,23 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class BootApplicationTests {
-
-    @Test
-    public void contextLoads() {
+    @BeforeClass
+    public static void beforeClass() {
+        System.out.println("junit test begin:");
     }
 
+    @AfterClass
+    public static void afterClass() {
+        System.out.println("junit test end:");
+    }
+
+    @Before
+    public void before() {
+        System.out.println("test fun begin:");
+    }
+
+    @After
+    public void after() {
+        System.out.println("test fun end:");
+    }
 }

@@ -1,8 +1,8 @@
 package com.liucan.controller;
 
-import com.liucan.Service.UserInfoJdbcTemplate;
-import com.liucan.Service.UserInfoMybatis;
 import com.liucan.common.response.CommonResponse;
+import com.liucan.service.UserInfoJdbcTemplate;
+import com.liucan.service.UserInfoMybatis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

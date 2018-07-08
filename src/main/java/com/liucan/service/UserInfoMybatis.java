@@ -1,4 +1,4 @@
-package com.liucan.Service;
+package com.liucan.service;
 
 import com.liucan.common.response.CommonResponse;
 import com.liucan.mybatis.dao.DaoMapper;
