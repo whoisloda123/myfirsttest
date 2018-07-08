@@ -19,6 +19,14 @@ import java.util.List;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
     /**
+     * 配置静态访问资源,自定义静态资源映射目录
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        //registry.addResourceHandler("/my/**").addResourceLocations("classpath:/my/");
+    }
+
+    /**
      * 转换与格式化
      */
     @Override
@@ -38,7 +46,7 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new CommonInterceptor()).addPathPatterns("/bootlearn/**");
+        registry.addInterceptor(new CommonInterceptor()).addPathPatterns("/bootlearn/**").excludePathPatterns("/bootlearn/login");
     }
 
     /**
@@ -48,7 +56,8 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        //registry.addViewController("/liucan").setViewName("index");
+        //直接设置登录页面
+        registry.addViewController("/bootlearn/login").setViewName("login");
     }
 
     /**

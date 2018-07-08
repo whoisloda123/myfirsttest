@@ -2,7 +2,6 @@ package com.liucan.controller;
 
 import com.liucan.domain.Person;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -22,17 +21,9 @@ import javax.validation.Valid;
 @Controller
 @RequestMapping("/bootlearn")
 public class MyController {
-
     /**
-     * spring-boot默认的模板路径resources/templates
+     * spring-boot默认的资源模板路径resources/templates
      */
-    @RequestMapping("/index")
-    public String index(Model model) {
-        model.addAttribute("msg", "你好啊");
-        return "index";
-    }
-
-    //form表单
     @GetMapping(value = "/person")
     public ModelAndView person() {
         return new ModelAndView("person", "command", new Person());
