@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
  * @author liucan
  * @date 2018/6/3
  * @brief 1.@ControllerAdvice + @ExceptionHandler 实现全局的 Controller 层的异常处理
- * 类似于aop，会捕获所有controller没有捕获的异常
- * 2.可以减少代码量，不用在controller里面每个方法都加上try catch
- * 3.@ControllerAdvice(annotations = RestController.class) 指向所有带有注解@RestController的控制器
- * 4.@ControllerAdvice("org.example.controllers") 指向所有指定包中的控制器
- * 5.还有ModelAttribute（在所有@RequestMapping之前对mode的操作）和InitBinder
- * 6.@RestControllerAdvice = @ControllerAdvice + @ResponseBody 相当于 @RestController = @Controller + @ResponseBody
- * 7.如果@ExceptionHandler定义控制器内部定义的，那么它会接收并处理由控制器（或其任何子类）中的@RequestMapping方法抛出的异常
+ *          类似于aop，会捕获所有controller没有捕获的异常
+ *        2.可以减少代码量，不用在controller里面每个方法都加上try catch
+ *        3.@ControllerAdvice(annotations = RestController.class) 指向所有带有注解@RestController的控制器
+ *        4.@ControllerAdvice("org.example.controllers") 指向所有指定包中的控制器
+ *        5.还有ModelAttribute（在所有@RequestMapping之前对mode的操作）和InitBinder
+ *        6.@RestControllerAdvice = @ControllerAdvice + @ResponseBody 相当于 @RestController = @Controller + @ResponseBody
+ *        7.如果@ExceptionHandler定义控制器内部定义的，那么它会接收并处理由控制器（或其任何子类）中的@RequestMapping方法抛出的异常
  */
 @RestControllerAdvice
 @Slf4j
