@@ -33,22 +33,20 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) throws Exception {
-        log.info("[拦截器]==============执行preHandle================");
-        String requestUri = request.getRequestURI();
-        String contextPath = request.getContextPath();
-        String url = requestUri.substring(contextPath.length());
+        String url = request.getRequestURI().substring(request.getContextPath().length());
+        log.info("[拦截器]拦截请求：{}，执行preHandle,开始执行拦截处理", url);
 
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equalsIgnoreCase("uid")) {
-                    log.info("[拦截器]用户已经登录uid:{}", cookie.getValue());
+                    log.info("[拦截器]拦截请求：{}，执行preHandle,拦截处理完成，用户已经登录uid:{}", url, cookie.getValue());
                     return true;
                 }
             }
         }
 
-        log.error("[拦截器] 用户还未登录", requestUri, contextPath, url);
+        log.error("[拦截器]拦截请求：{},执行preHandle, 拦截处理完成，用户还未登录", url);
         response.sendRedirect("login");
         return false;
     }
@@ -62,7 +60,8 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
                            HttpServletResponse response,
                            Object handler,
                            ModelAndView modelAndView) throws Exception {
-        log.info("[拦截器]==============执行postHandle================");
+        String url = request.getRequestURI().substring(request.getContextPath().length());
+        log.info("[拦截器]请求处理完成：{}，准备生成视图：，执行postHandle", url);
         if (modelAndView != null) {  //加入当前时间
             modelAndView.addObject("var", "测试postHandle");
         }
@@ -77,7 +76,8 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
                                 HttpServletResponse response,
                                 Object handler,
                                 Exception ex) throws Exception {
-        log.info("[拦截器]==============执行afterCompletion================");
+        String url = request.getRequestURI().substring(request.getContextPath().length());
+        log.info("[拦截器]请求全部处理完成：{}，执行afterCompletion", url);
     }
 
 }
