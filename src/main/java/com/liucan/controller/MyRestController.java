@@ -1,6 +1,6 @@
 package com.liucan.controller;
 
-import com.liucan.common.redis.Ledis;
+import com.liucan.common.redis.JedisCluster;
 import com.liucan.common.response.CommonResponse;
 import com.liucan.service.UserInfoJdbcTemplate;
 import com.liucan.service.UserInfoMybatis;
@@ -20,7 +20,7 @@ public class MyRestController {
     @Autowired
     private UserInfoMybatis userInfoMybatis;
     @Autowired
-    private Ledis ledis;
+    private JedisCluster jedisCluster;
 
     @RequestMapping("/find_name")
     public CommonResponse findName(@RequestParam("user_id") Integer userId) {
@@ -40,13 +40,13 @@ public class MyRestController {
     @PostMapping("/redis_set")
     public CommonResponse redisSet(@RequestParam("key") String key,
                                    @RequestParam("value") String value) {
-        ledis.set(key, value);
+        jedisCluster.set(key, value);
         return CommonResponse.ok();
     }
 
     @GetMapping("/redis_set")
     public CommonResponse redisSet(@RequestParam("key") String key) {
-        Object value = ledis.get(key);
+        Object value = jedisCluster.get(key);
         return CommonResponse.ok(value);
     }
 }

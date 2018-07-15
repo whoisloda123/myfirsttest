@@ -108,7 +108,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-        <!--此处spring-boot-starter-data-redis里面已经包含了，但不知道为什么不识别，只能手动加入-->
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>

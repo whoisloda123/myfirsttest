@@ -1,14 +1,12 @@
 package com.liucan.config;
 
-import com.liucan.common.redis.Ledis;
+import com.liucan.common.redis.JedisCluster;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisPassword;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.*;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,6 +15,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author liucan
@@ -28,7 +28,8 @@ import java.time.Duration;
 @ConfigurationProperties(prefix = "redis")
 @PropertySource(value = "classpath:properties/redis.properties")
 public class RedisConfig {
-    private String ip;
+    //mater
+    private String hostName;
     private Integer port;
     private String password;
     private String expire;
@@ -45,8 +46,10 @@ public class RedisConfig {
     private Boolean testWhileIdle;
 
     //哨兵，集群
-    private String clusterNodes; //集群
-    private Integer clusterMaxRedirects; //集群
+    private String clusterNodes;
+    private Integer clusterMaxRedirects;
+    private String sentinelNodes;
+    private String sentinelMaster;
 
     /**
      * JedisPoolConfig 连接池
@@ -74,19 +77,79 @@ public class RedisConfig {
     }
 
     /**
-     * 单机版配置
+     * 1.集群配置:自带类似于哨兵功能,分布式节点
+     * 2.至少需要6个redis服务，集群会自动分配3主3从，且主挂了，会自动将slave变为mater
+     * 若都挂了，则整个集群down
      */
     @Bean
-    public JedisConnectionFactory jedisConnectionFactory() {
+    public RedisClusterConfiguration redisClusterConfiguration() {
+        RedisClusterConfiguration redisClusterConfiguration = new RedisClusterConfiguration();
+        String[] servers = clusterNodes.split(",");
+        Set<RedisNode> nodes = new HashSet<>();
+        for (String server : servers) {
+            String[] ipAndPort = server.split(":");
+            nodes.add(new RedisNode(ipAndPort[0].trim(), Integer.valueOf(ipAndPort[1])));
+        }
+        redisClusterConfiguration.setClusterNodes(nodes);
+        redisClusterConfiguration.setMaxRedirects(clusterMaxRedirects);
+        //redisClusterConfiguration.setPassword(RedisPassword.of(password));
+        return redisClusterConfiguration;
+    }
+
+    /**
+     * 哨兵配置,缺点是每个节点都是全量配置，浪费资源
+     */
+    @Bean
+    public RedisSentinelConfiguration redisSentinelConfiguration() {
+        RedisSentinelConfiguration redisSentinelConfiguration = new RedisSentinelConfiguration();
+        //配置master的名称
+        RedisNode redisNode = new RedisNode(hostName, port);
+        redisNode.setName(sentinelMaster);
+        redisSentinelConfiguration.setMaster(redisNode);
+        //redisSentinelConfiguration.setPassword(RedisPassword.of(password));
+
+        //配置redis的哨兵
+        Set<RedisNode> nodes = new HashSet<>();
+        String[] servers = sentinelNodes.split(",");
+        for (String server : servers) {
+            String[] ipAndPort = server.split(":");
+            nodes.add(new RedisNode(ipAndPort[0].trim(), Integer.valueOf(ipAndPort[1])));
+        }
+        redisSentinelConfiguration.setSentinels(nodes);
+        return redisSentinelConfiguration;
+    }
+
+    /**
+     * 单机版connectionFactory
+     */
+    //@Bean
+    public JedisConnectionFactory jedisStandaloneConnectionFactory() {
         RedisStandaloneConfiguration standaloneConfiguration = new RedisStandaloneConfiguration();
-        standaloneConfiguration.setHostName(ip);
-        standaloneConfiguration.setPassword(RedisPassword.of(password));
+        standaloneConfiguration.setHostName(hostName);
         standaloneConfiguration.setPort(port);
+        //standaloneConfiguration.setPassword(RedisPassword.of(password));
 
         JedisClientConfiguration.JedisClientConfigurationBuilder jedisClientConfiguration = JedisClientConfiguration.builder();
-        //超时
         jedisClientConfiguration.connectTimeout(Duration.ofMillis(timeout));
         return new JedisConnectionFactory(standaloneConfiguration, jedisClientConfiguration.build());
+    }
+
+    /**
+     * 集群connectionFactory
+     */
+    @Bean
+    public JedisConnectionFactory jedisClusterConnectionFactory(RedisClusterConfiguration redisClusterConfiguration,
+                                                                JedisPoolConfig jedisPoolConfig) {
+        return new JedisConnectionFactory(redisClusterConfiguration, jedisPoolConfig);
+    }
+
+    /**
+     * 哨兵connectionFactory
+     */
+    //@Bean
+    public JedisConnectionFactory jedisSentinelConnectionFactory(RedisSentinelConfiguration redisSentinelConfiguration,
+                                                                 JedisPoolConfig jedisPoolConfig) {
+        return new JedisConnectionFactory(redisSentinelConfiguration, jedisPoolConfig);
     }
 
     /**
@@ -95,34 +158,25 @@ public class RedisConfig {
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        initDomainRedisTemplate(redisTemplate, redisConnectionFactory);
+        //如果不配置Serializer，那么存储的时候缺省使用String，如果用User类型存储，那么会提示错误User can't cast to String！
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+        //开启事务
+        redisTemplate.setEnableTransactionSupport(true);
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
         return redisTemplate;
     }
 
     /**
-     * 设置数据存入 redis 的序列化方式,并开启事务
-     *
-     * @param redisTemplate
-     * @param factory
+     * 实例化jedisCluster对象
      */
-    private void initDomainRedisTemplate(RedisTemplate<String, Object> redisTemplate, RedisConnectionFactory factory) {
-        //如果不配置Serializer，那么存储的时候缺省使用String，如果用User类型存储，那么会提示错误User can't cast to String！
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-        //开启事务
-        redisTemplate.setEnableTransactionSupport(true);
-        redisTemplate.setConnectionFactory(factory);
-    }
-
-    /**
-     * 实例化Ledis对象
-     */
-    @Bean("ledis")
-    public Ledis ledis(RedisTemplate<String, Object> redisTemplate) {
-        Ledis ledis = new Ledis();
-        ledis.setRedisTemplate(redisTemplate);
-        return ledis;
+    @Bean
+    public JedisCluster jedisCluster(RedisTemplate<String, Object> redisTemplate) {
+        JedisCluster jedisCluster = new JedisCluster();
+        jedisCluster.setRedisTemplate(redisTemplate);
+        return jedisCluster;
     }
 }

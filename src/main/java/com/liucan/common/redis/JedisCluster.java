@@ -12,10 +12,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author liucan
  * @date 2018/7/12
- * @brief redis操作
+ * @brief redis集群
  */
 @Setter
-public class Ledis {
+public class JedisCluster {
     private RedisTemplate<String, Object> redisTemplate;
 
     /**
@@ -57,7 +57,6 @@ public class Ledis {
             return redisTemplate.hasKey(key);
         } catch (Exception e) {
             e.printStackTrace();
-            ;
             return false;
         }
     }
