@@ -61,6 +61,12 @@
             <optional>true</optional>
         </dependency>
 
+        <!--spring cache-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
         <!--thymeleaf页面模板引擎（Spring官方推荐），类似JSP，Velocity，FreeMaker-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

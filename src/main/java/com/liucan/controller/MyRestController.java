@@ -5,6 +5,7 @@ import com.liucan.common.response.CommonResponse;
 import com.liucan.service.UserInfoJdbcTemplate;
 import com.liucan.service.UserInfoMybatis;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -22,17 +23,19 @@ public class MyRestController {
     @Autowired
     private JedisCluster jedisCluster;
 
-    @RequestMapping("/find_name")
-    public CommonResponse findName(@RequestParam("user_id") Integer userId) {
-        return CommonResponse.ok(userInfoJdbcTemplate.queryUser(userId));
+    @Cacheable(value = "userInfo")
+    @GetMapping("/find_name")
+    public String findName(@RequestParam("user_id") Integer userId) {
+        return userInfoJdbcTemplate.queryUser(userId);
     }
 
-    @RequestMapping("/find_name1")
+    @GetMapping("/find_name1")
     public CommonResponse findName1(@RequestParam("user_id") Integer userId) {
         return userInfoMybatis.getName(userId);
     }
 
-    @RequestMapping("/find_phone")
+    @Cacheable(value = "userInfo")
+    @GetMapping("/find_phone")
     public CommonResponse findPhone(@RequestParam("user_id") Integer userId) {
         return userInfoMybatis.getUserPhone(userId);
     }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
  * @author liucan
  * @date 2018/7/8
  * @brief 通过JdbcTemplate来操作数据库, Spring的JdbcTemplate是自动配置的，
- * 你可以直接使用@Autowired来注入到你自己的bean中来使用
+ *        你可以直接使用@Autowired来注入到你自己的bean中来使用
  */
 @Service
 public class UserInfoJdbcTemplate {

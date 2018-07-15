@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Aspect
 @Component
+@EnableAspectJAutoProxy
 public class WebLogAspect {
     @Pointcut("execution(* com.liucan.controller.MyRestController.*(..))")
     private void pointcutId() {

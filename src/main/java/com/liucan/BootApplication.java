@@ -1,10 +1,7 @@
 package com.liucan;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @Author: liucan
@@ -18,16 +15,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *                 c.EnableAutoConfiguration自动配置：从classpath中搜寻所有的META-INF/spring.factories配置文件，
  *                   并将其中EnableAutoConfiguration对应的配置项通过反射（Java Refletion ）实例化为对应的标注了
  *                   Configuration的JavaConfig形式的IoC容器配置类，然后汇总为一个并加载到IoC容器
- *               3.@ComponentScan：扫描当前包及其子包
- *               4.所有一般将该类放在最顶层，方便其子包扫描到，也可以@SpringBootApplication(scanBasePackageClasses = MyConfig.class)
+ *               3.@ComponentScan：扫描当前包及其子包,一般将该类放在最顶层，方便其子包扫描到，
+ *                 也可以@SpringBootApplication(scanBasePackageClasses = MyConfig.class)
  */
 
 @SpringBootApplication
-@EnableAspectJAutoProxy
-@EnableTransactionManagement
-@MapperScan(basePackages = "com.liucan.mybatis.dao")
 public class BootApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(BootApplication.class, args);
     }

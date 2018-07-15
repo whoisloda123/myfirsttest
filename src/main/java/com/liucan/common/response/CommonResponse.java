@@ -2,13 +2,15 @@ package com.liucan.common.response;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author liucan
  * @date 2018/6/3
  * @brief 通用返回response
  */
 @Data
-public class CommonResponse {
+public class CommonResponse implements Serializable {
     private int code; //返回code
     private String message; //返回信息
     private Object data; //返回数据
