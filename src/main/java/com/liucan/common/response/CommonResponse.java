@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @brief 通用返回response
  */
 @Data
-public class CommonResponse implements Serializable {
+public class CommonResponse {
     private int code; //返回code
     private String message; //返回信息
     private Object data; //返回数据
