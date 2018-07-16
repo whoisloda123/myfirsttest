@@ -43,14 +43,13 @@ public class MyRestController {
     @PostMapping("/redis_set")
     public CommonResponse redisSet(@RequestParam("key") String key,
                                    @RequestParam("value") String value) {
-        jedisCluster.set(key, value);
+        jedisCluster.set(key, CommonResponse.ok(value));
         return CommonResponse.ok();
     }
 
     @GetMapping("/redis_set")
-    public CommonResponse redisSet(@RequestParam("key") String key) {
-        Object value = jedisCluster.get(key);
-        return CommonResponse.ok(value);
+    public Object redisSet(@RequestParam("key") String key) {
+        return jedisCluster.get(key);
     }
 }
 

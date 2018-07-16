@@ -8,9 +8,10 @@ import java.io.Serializable;
  * @author liucan
  * @date 2018/6/3
  * @brief 通用返回response
+ *        加Serializable，是因为在用spring cache redis时候保存到redis的对象需要支持序列化
  */
 @Data
-public class CommonResponse {
+public class CommonResponse implements Serializable {
     private int code; //返回code
     private String message; //返回信息
     private Object data; //返回数据

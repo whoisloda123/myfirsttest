@@ -40,7 +40,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!--热启动模块，修改代码后可自动重启-->
+        <!--热启动模块，修改代码后可自动重启：注意，该配置可能会影响spring-cache redis的反序列化-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>

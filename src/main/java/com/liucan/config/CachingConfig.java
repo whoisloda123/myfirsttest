@@ -6,11 +6,11 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -28,11 +28,10 @@ import java.time.Duration;
  *          CachePut: 一般用于更新和插入操作，每次都会请求缓存，通过key操作redis，没有则插入，有则更新
  *          CacheEvict：根据key删除缓存中的数据。allEntries=true表示删除缓存中的所有数据
  */
-@Import({RedisConfig.class})
 @Configuration
 @EnableCaching
 public class CachingConfig extends CachingConfigurerSupport {
-    private static final Integer ENTRY_TTL = 60; //key的过期时间
+    private static final Integer ENTRY_TTL = 30; //key的过期时间
 
     /**
      * 自定义key生成策略，如果在Cache注解上没有指定key的话会调用keyGenerator自动生成
@@ -55,19 +54,20 @@ public class CachingConfig extends CachingConfigurerSupport {
     }
 
     /**
-     * RedisCacheManager
+     * cacheManager:用RedisCacheManager
      */
     @Bean
-    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory,
+                                     Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer) {
         return new RedisCacheManager(RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory),
-                redisCacheConfiguration()); //默认策略，未配置的 key 会使用这个
+                redisCacheConfiguration(jackson2JsonRedisSerializer));
     }
 
-    public RedisCacheConfiguration redisCacheConfiguration() {
+    private RedisCacheConfiguration redisCacheConfiguration(Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer) {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig();
         redisCacheConfiguration.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()));
-        redisCacheConfiguration.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer()));
-        redisCacheConfiguration.entryTtl(Duration.ofSeconds(ENTRY_TTL));
+        redisCacheConfiguration.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer));
+        redisCacheConfiguration.entryTtl(Duration.ofMinutes(ENTRY_TTL));
         return redisCacheConfiguration;
     }
 }
