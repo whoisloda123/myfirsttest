@@ -1,14 +1,13 @@
 package com.liucan.controller;
 
+import com.liucan.common.validtor.PersonValidator;
 import com.liucan.domain.Person;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -44,6 +43,14 @@ public class MyController {
             model.addAttribute("age", person.getAge());
             model.addAttribute("address", person.getAddress());
             return "result";
+        }
+    }
+
+    @InitBinder //在该control里面所有RequestMapping之前都会执行
+    public void initBinder(WebDataBinder webDataBinder) {
+        //添加PersonValidtor
+        if (webDataBinder.getTarget() instanceof Person) {
+            webDataBinder.addValidators(new PersonValidator());
         }
     }
 }

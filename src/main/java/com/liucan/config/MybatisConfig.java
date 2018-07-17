@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * @author liucan
  * @date 2018/7/15
- * @brief pom.xml里面添加mybatis-spring-boot-starter依赖自动将会提供如下，而不用手动自己创建：
+ * @brief mybatis配置，pom.xml里面添加mybatis-spring-boot-starter依赖自动将会提供如下，而不用手动自己创建：
  * 1.自动检测现有的DataSource
  * 2.将创建并注册SqlSessionFactory的实例，该实例使用SqlSessionFactoryBean将该DataSource作为输入进行传递
  * 3.将创建并注册从SqlSessionFactory中获取的SqlSessionTemplate的实例。
@@ -22,5 +22,5 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @MapperScan(basePackages = "com.liucan.mybatis.dao")
-public class TransactionManagementConfig {
+public class MybatisConfig {
 }

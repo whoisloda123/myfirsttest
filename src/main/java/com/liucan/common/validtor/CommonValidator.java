@@ -10,9 +10,9 @@ import org.springframework.validation.Validator;
  * @author liucan
  * @date 2018/7/1
  * @brief 全局验证器，配合@Valid使用
- * 2种方法：
- * 1.在类的属性上面添加类似于@Min注解，如在Student类上面加类似于@Min，简单方便
- * 2.重写Validator接口，在validate里面进行自定义校验，可以自己添加比较复杂的校验
+ *        2种方法：
+ *        1.在类的属性上面添加类似于@Min注解，如在Student类上面加类似于@Min，简单方便
+ *        2.重写Validator接口，在validate里面进行自定义校验，可以自己添加比较复杂的校验
  */
 public class CommonValidator implements Validator {
     /**
