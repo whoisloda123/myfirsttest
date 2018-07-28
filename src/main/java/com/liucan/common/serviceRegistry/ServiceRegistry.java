@@ -9,6 +9,10 @@ import java.util.concurrent.CountDownLatch;
  * @author liucan
  * @date 2018/7/23
  * @brief zookeeper服务注册
+ *        zooKeeper用处
+ *        1.配置管理
+ *        2.分布式服务集群管理，服务注册，监控，master选举等等
+ *        3.分布式锁，分布式队列等等
  */
 @Slf4j
 public class ServiceRegistry implements Watcher {

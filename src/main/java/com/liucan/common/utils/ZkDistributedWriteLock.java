@@ -16,12 +16,13 @@ import java.util.concurrent.locks.Lock;
  * @author liucan
  * @date 2018/7/28
  * @brief zookeeper分布式写锁
- * 1.参考资料：https://blog.csdn.net/peace1213/article/details/52571445
- * 2.创建wirte_lock持久节点，顺序临时子节点
- * 3.lock时候getchild（不需要监控，会有羊群效应）判断 临时最小节点是否是最小的
- * 4.如果是则，获得锁，否则监听比自己小一个节点的exist，事件发生获得锁
- * 5.unlock直接删除节点
- * 6.里面在perZnode在unlock的是有点问题，通知不到
+ *        1.参考资料：https://blog.csdn.net/peace1213/article/details/52571445
+ *        2.创建wirte_lock持久节点，顺序临时子节点
+ *        3.lock时候getchild（不需要监控，会有羊群效应）判断 临时最小节点是否是最小的
+ *        4.如果是则，获得锁，否则监听比自己小一个节点的exist，事件发生获得锁
+ *        5.unlock直接删除节点
+ *        6.里面在perZnode在unlock的是有点问题，通知不到
+ *        7.可以使用Apache Curator封装Zookeeper操作的库
  */
 @Slf4j
 public class ZkDistributedWriteLock implements Watcher, Lock {
