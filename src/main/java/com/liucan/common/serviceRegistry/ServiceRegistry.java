@@ -23,7 +23,7 @@ public class ServiceRegistry implements Watcher {
             //禁用sasl认证，否则会报错,不禁用不影响运行
             System.setProperty("zookeeper.sasl.client", "false");
             zk = new ZooKeeper(zkServers, SESSION_TIMEOUT, this);
-            latch.await();
+            latch.await(); //等待创建成功
         } catch (Exception e) {
             log.error("[服务注册]创建zk失败", e);
         }
