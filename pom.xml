@@ -126,8 +126,20 @@
             <artifactId>zookeeper</artifactId>
             <version>3.4.10</version>
         </dependency>
-    </dependencies>
 
+        <!--kafka-->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
+        <!--fast-json-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.4</version>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>

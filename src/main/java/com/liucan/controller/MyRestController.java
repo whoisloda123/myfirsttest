@@ -1,11 +1,14 @@
 package com.liucan.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.liucan.common.redis.JedisCluster;
 import com.liucan.common.response.CommonResponse;
+import com.liucan.domain.Person;
 import com.liucan.service.UserInfoJdbcTemplate;
 import com.liucan.service.UserInfoMybatis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -22,6 +25,8 @@ public class MyRestController {
     private UserInfoMybatis userInfoMybatis;
     @Autowired
     private JedisCluster jedisCluster;
+    @Autowired
+    private KafkaTemplate kafkaTemplate;
 
     @Cacheable(value = "userInfo")
     @GetMapping("/find_name")
@@ -50,6 +55,17 @@ public class MyRestController {
     @GetMapping("/redis_set")
     public Object redisSet(@RequestParam("key") String key) {
         return jedisCluster.get(key);
+    }
+
+    @PostMapping("kafka")
+    public CommonResponse kafka() {
+        Person person = new Person();
+        person.setAge(12);
+        person.setName("liucan");
+        person.setAddress("重庆市");
+        Object object = kafkaTemplate.send(kafkaTemplate.getDefaultTopic(), JSONObject.toJSONString(person));
+        return CommonResponse.ok(object);
+
     }
 }
 

@@ -16,7 +16,7 @@ import java.util.concurrent.CountDownLatch;
  */
 @Slf4j
 public class ServiceRegistry implements Watcher {
-    private static final int SESSION_TIMEOUT = 5000;
+    private static final int SESSION_TIMEOUT = 30000;
     private static final String REGISTRY_PATH = "/registry";
     private static CountDownLatch latch = new CountDownLatch(1);
     private ZooKeeper zk;
