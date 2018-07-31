@@ -6,6 +6,7 @@ import com.liucan.common.response.CommonResponse;
 import com.liucan.domain.Person;
 import com.liucan.service.UserInfoJdbcTemplate;
 import com.liucan.service.UserInfoMybatis;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * @Date: 2018/7/6
  * @Description:
  */
+@Slf4j
 @RestController
 @RequestMapping("/bootlearn")
 public class MyRestController {
@@ -63,9 +65,10 @@ public class MyRestController {
         person.setAge(12);
         person.setName("liucan");
         person.setAddress("重庆市");
-        Object object = kafkaTemplate.send(kafkaTemplate.getDefaultTopic(), JSONObject.toJSONString(person));
-        return CommonResponse.ok(object);
-
+        String json = JSONObject.toJSONString(person);
+        String key = "student";
+        log.info("[kafka]发送kafka消息topic:{}, key:{}, data：{}", kafkaTemplate.getDefaultTopic(), key, json);
+        return CommonResponse.ok(kafkaTemplate.send(kafkaTemplate.getDefaultTopic(), key, json));
     }
 }
 

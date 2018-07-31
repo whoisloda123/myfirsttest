@@ -33,6 +33,8 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         factory.setConcurrency(4);
+        //设置为批量消费，每个批次数量在Kafka配置参数中设置ConsumerConfig.MAX_POLL_RECORDS_CONFIG
+        factory.setBatchListener(true);
         factory.getContainerProperties().setPollTimeout(4000);
         return factory;
     }
@@ -47,6 +49,7 @@ public class KafkaConsumerConfig {
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, group);
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "100");
         return new DefaultKafkaConsumerFactory<>(properties);
     }
 }
