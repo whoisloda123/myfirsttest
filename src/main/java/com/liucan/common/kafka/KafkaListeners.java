@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
  * @author liucan
  * @date 2018/7/29
  * @brief kafka监听topic
+ *        1.参考资料：https://blog.csdn.net/imgxr/article/details/80130878
  */
 @Slf4j
 @Component
