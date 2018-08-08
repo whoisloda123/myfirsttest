@@ -1,4 +1,4 @@
-package com.liucan.common.controllerAdvice;
+package com.liucan.common.advice;
 
 import com.liucan.common.exception.BizException;
 import com.liucan.common.response.CommonResponse;

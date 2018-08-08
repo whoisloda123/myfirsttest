@@ -1,6 +1,8 @@
 package com.liucan.controller;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSONObject;
+import com.liucan.common.dubbo.BootDubboServiceImpl;
 import com.liucan.common.redis.JedisCluster;
 import com.liucan.common.response.CommonResponse;
 import com.liucan.domain.Person;
@@ -29,6 +31,8 @@ public class MyRestController {
     private JedisCluster jedisCluster;
     @Autowired
     private KafkaTemplate kafkaTemplate;
+    @Reference
+    private BootDubboServiceImpl bootDubboService;
 
     @Cacheable(value = "userInfo")
     @GetMapping("/find_name")
@@ -69,6 +73,11 @@ public class MyRestController {
         String key = "student";
         log.info("[kafka]发送kafka消息topic:{}, key:{}, data：{}", kafkaTemplate.getDefaultTopic(), key, json);
         return CommonResponse.ok(kafkaTemplate.send(kafkaTemplate.getDefaultTopic(), key, json));
+    }
+
+    @GetMapping("dubbo")
+    public CommonResponse dubbo(@RequestParam("user_id") Integer userId) {
+        return CommonResponse.ok(bootDubboService.getUserName(userId));
     }
 }
 
