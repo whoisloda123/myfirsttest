@@ -1,0 +1,33 @@
+package com.liucan.common.interceptor;
+
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.server.HandshakeInterceptor;
+
+import javax.servlet.http.HttpSession;
+import java.util.Map;
+
+/**
+ * @author liucan
+ * @date 2018/8/12
+ * @brief 第一次连接websocket进入hander之前的拦截器
+ * 1.拦截建立连接url地址，拦截用户id等待，将它以键值对应放session里
+ */
+public class WebSocketIntercepter implements HandshakeInterceptor {
+    @Override
+    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler handler, Map<String, Object> map) {
+        if (request instanceof ServletServerHttpRequest) {
+            String userId = request.getURI().toString().split("ID=")[1];
+            ServletServerHttpRequest serverHttpRequest = (ServletServerHttpRequest) request;
+            HttpSession session = serverHttpRequest.getServletRequest().getSession();
+            map.put("websocket-userid", userId);
+        }
+        return true;
+    }
+
+    @Override
+    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler handler, Exception e) {
+    }
+}
