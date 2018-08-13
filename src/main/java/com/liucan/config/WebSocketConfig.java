@@ -1,6 +1,6 @@
 package com.liucan.config;
 
-import com.liucan.common.interceptor.WebSocketIntercepter;
+import com.liucan.common.interceptor.WebSocketInterceptor;
 import com.liucan.common.websocket.WebSocketHandlerImpl;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(new WebSocketHandlerImpl(), "/boot/websocket/{ID}")
-                .addInterceptors(new WebSocketIntercepter())
+                .addInterceptors(new WebSocketInterceptor())
                 .setAllowedOrigins("*");
     }
 

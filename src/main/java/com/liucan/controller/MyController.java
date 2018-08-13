@@ -28,6 +28,11 @@ public class MyController {
         return new ModelAndView("person", "command", new Person());
     }
 
+    @GetMapping("websocket")
+    public ModelAndView websocket() {
+        return new ModelAndView("websocket", "command", new Person());
+    }
+
     @PostMapping(value = "/addPerson")
     public String addPerson(@ModelAttribute("person") @Valid Person person,
                             BindingResult bindingResult,

@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * @brief 服务注册
  */
 @Data
-@Configuration
+@Configuration("serverRegistryConfig")
 public class RegistryConfig {
     @Value("${registry.servers}")
     private String servers;

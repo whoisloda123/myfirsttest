@@ -17,7 +17,7 @@ public class DubboBaseConfig {
     @Value("${spring.dubbo.registry.address}")
     private String address;
 
-    @Bean
+    @Bean("dubboRegistryConfig")
     public RegistryConfig registryConfig() {
         RegistryConfig registryConfig = new RegistryConfig();
         registryConfig.setAddress(address);

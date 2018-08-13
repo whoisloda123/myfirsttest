@@ -2,7 +2,8 @@ package com.liucan.config.dubbo;
 
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.spring.ServiceBean;
-import com.liucan.domain.Person;
+import com.liucan.common.dubbo.BootDubboServiceImpl;
+import com.liucan.common.dubbo.IBootDubboService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,15 +14,15 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class DubboServiceConfig extends DubboBaseConfig {
-    @Bean
-    public ServiceBean<Person> personServiceExport(Person person) {
-        ServiceBean<Person> serviceBean = new ServiceBean<>();
+    //@Bean
+    public ServiceBean<IBootDubboService> bootDubboServiceServiceExport(BootDubboServiceImpl bootDubboService) {
+        ServiceBean<IBootDubboService> serviceBean = new ServiceBean<>();
         serviceBean.setTimeout(5000);
         serviceBean.setRetries(3);
         serviceBean.setVersion("1.1.0");
         serviceBean.setProxy("javassist");
-        serviceBean.setRef(person);
-        serviceBean.setInterface(Person.class.getName());
+        serviceBean.setRef(bootDubboService);
+        serviceBean.setInterface(IBootDubboService.class.getName());
         return serviceBean;
     }
 
