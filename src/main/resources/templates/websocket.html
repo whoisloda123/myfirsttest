@@ -6,7 +6,7 @@
     <script type="text/javascript">
 
         // 创建websocket实例
-        var ws = new WebSocket("ws://localhost:8080/boot/websocket/12");
+        var ws = new WebSocket("ws://localhost:8080/boot/websocket/test?userId=5634535");
         /*
          *监听三种状态的变化js会回调
          */
@@ -39,8 +39,8 @@
             // 消息体JSON 对象 对应JAVA 的 Msg对象
             var data = {
                 // 定点发送给其他用户的userId
-                toUid: "3d535429-5fcb-4490-bcf7-96fd84bb17b6",
-                data: text
+                userId: "7878746",
+                msg: text
             }
 
             ws.send(JSON.stringify(data));
@@ -48,7 +48,7 @@
         }
 
         function showMessage(message) {
-            var text = document.createTextNode(JSON.parse(message).data);
+            var text = document.createTextNode(message);
             var br = document.createElement("br");
             var div = document.getElementById("showChatMessage");
             div.appendChild(text);

@@ -13,18 +13,23 @@ import java.util.Map;
  * @author liucan
  * @date 2018/8/12
  * @brief 第一次连接websocket进入hander之前的拦截器
- * 1.拦截建立连接url地址，拦截用户id等待，将它以键值对应放session里
+ *        1.拦截建立连接url地址，拦截用户id等待，将它以键值对应放session里
  */
 public class WebSocketInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler handler, Map<String, Object> map) {
         if (request instanceof ServletServerHttpRequest) {
-            String userId = request.getURI().toString().split("ID=")[1];
             ServletServerHttpRequest serverHttpRequest = (ServletServerHttpRequest) request;
             HttpSession session = serverHttpRequest.getServletRequest().getSession();
-            map.put("websocket-userid", userId);
+
+            String query = request.getURI().getQuery();
+            if (!query.isEmpty()) {
+                String[] querys = query.split("=");
+                map.put("userId", Integer.valueOf(querys[1]));
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     @Override

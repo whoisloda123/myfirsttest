@@ -1,6 +1,7 @@
 package com.liucan.common.websocket;
 
 import com.alibaba.fastjson.JSONObject;
+import com.liucan.domain.PalyloadMsg;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -18,18 +19,39 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class WebSocketHandlerImpl extends TextWebSocketHandler {
     //用户列表
-    private ConcurrentHashMap<String, WebSocketSession> userMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, WebSocketSession> userMap = new ConcurrentHashMap<>();
 
     /**
      * 建立连接后
      */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        String ID = session.getUri().toString().split("ID=")[1];
-        if (ID != null) {
-            userMap.put(ID, session);
-            log.info("[websocekt]建立连接成功，ID：{}", ID);
-            session.sendMessage(new TextMessage("成功建立websocket连接"));
+        Integer userId = (Integer) session.getAttributes().get("userId");
+        if (userId != null) {
+            userMap.put(userId, session);
+            log.info("[websocekt]建立连接成功，userId：{}", userId);
+
+            PalyloadMsg palyloadMsg = new PalyloadMsg();
+            palyloadMsg.setUserId(userId);
+            palyloadMsg.setMsg("成功建立websocket连接");
+            sendMessageToUser(palyloadMsg);
+        }
+    }
+
+    /**
+     * 收到socket消息
+     */
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        try {
+            log.info("[websocket]收到socket消息，message:{}", session, message.getPayload());
+
+            PalyloadMsg palyloadMsg = JSONObject.parseObject(message.getPayload(), PalyloadMsg.class);
+            if (palyloadMsg != null) {
+                sendMessageToUser(palyloadMsg);
+            }
+        } catch (Exception e) {
+            log.error("[websocket]收到socket消息，解析出现异常，session：{}，message:{}", session, message);
         }
     }
 
@@ -38,9 +60,9 @@ public class WebSocketHandlerImpl extends TextWebSocketHandler {
      */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
-        log.info("[websocekt]连接已关闭，closeStatus：{}", closeStatus);
-        String userId = getClientUserId(session);
+        Integer userId = getClientUserId(session);
         if (userId != null) {
+            log.info("[websocekt]连接已关闭，closeStatus：{}, userId:{}", closeStatus, userId);
             userMap.remove(userId);
         }
     }
@@ -55,42 +77,35 @@ public class WebSocketHandlerImpl extends TextWebSocketHandler {
             session.close();
         }
 
-        String userId = getClientUserId(session);
+        Integer userId = getClientUserId(session);
         if (userId != null) {
             userMap.remove(userId);
         }
     }
 
     /**
-     * 收到socket消息
-     */
-    @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        try {
-            log.info("[websocket]收到socket消息，message:{}", session, message.getPayload());
-            JSONObject jsonObject = JSONObject.parseObject(message.getPayload());
-            String userId = (String) session.getAttributes().get("websocket-userid");
-            sendMessageToUser(userId, new TextMessage("服务器收到消息了"));
-        } catch (Exception e) {
-            log.error("[websocket]收到socket消息，解析出现异常，session：{}，message:{}", session, message);
-        }
-    }
-
-    /**
      * 发送单个socket消息
      */
-    public boolean sendMessageToUser(String userId, TextMessage message) {
+    public boolean sendMessageToUser(PalyloadMsg palyloadMsg) {
+        if (palyloadMsg == null) {
+            return false;
+        }
+        Integer userId = palyloadMsg.getUserId();
+        String msg = palyloadMsg.getMsg();
         WebSocketSession session = userMap.get(userId);
         if (session == null) {
+            log.error("[websocket]发送socket消息失败，找不到用户，userId：{}", userId);
             return false;
         }
         if (!session.isOpen()) {
+            log.error("[websocket]发送socket消息失败，用户不在线，userId：{}", userId);
             return false;
         }
         try {
-            session.sendMessage(message);
+            session.sendMessage(new TextMessage(msg));
+            log.info("[websocket]发送socket消息成功，userId：{}，message:{}", userId, msg);
         } catch (Exception e) {
-            log.error("[websocket]发送socket消息异常，userId：{}，message:{}", userId, message, e);
+            log.error("[websocket]发送socket消息异常，userId：{}，message:{}", userId, msg, e);
             return false;
         }
         return true;
@@ -99,27 +114,27 @@ public class WebSocketHandlerImpl extends TextWebSocketHandler {
     /**
      * 发送多个socket消息
      */
-    public boolean sendMessageToAllUsers(TextMessage message) {
+    public boolean sendMessageToAllUsers(PalyloadMsg palyloadMsg) {
         boolean allSendSuccess = true;
-        Set<String> userIds = userMap.keySet();
-        WebSocketSession session = null;
-        for (String userId : userIds) {
+        Set<Integer> userIds = userMap.keySet();
+        WebSocketSession session;
+        for (Integer userId : userIds) {
             try {
                 session = userMap.get(userId);
                 if (session.isOpen()) {
-                    session.sendMessage(message);
+                    session.sendMessage(new TextMessage(palyloadMsg.getMsg()));
                 }
             } catch (Exception e) {
-                log.error("[websocket]发送socket消息异常，userId：{}，message:{}", userId, message, e);
+                log.error("[websocket]发送socket消息异常，userId：{}，message:{}", userId, palyloadMsg.getMsg(), e);
                 allSendSuccess = false;
             }
         }
         return allSendSuccess;
     }
 
-    private String getClientUserId(WebSocketSession session) {
+    private Integer getClientUserId(WebSocketSession session) {
         try {
-            return (String) session.getAttributes().get("WEBSOCKET_USERID");
+            return (Integer) session.getAttributes().get("userId");
         } catch (Exception e) {
             return null;
         }
