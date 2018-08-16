@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liucan.common.redis.JedisCluster;
+import com.liucan.common.redis.RedisMessageListener;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,9 @@ import org.springframework.data.redis.connection.*;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -196,4 +200,22 @@ public class RedisConfig {
         jedisCluster.setRedisTemplate(redisTemplate);
         return jedisCluster;
     }
+
+    /**
+     * redis,subscribe监听器
+     */
+    @Bean
+    MessageListenerAdapter messageListener(RedisMessageListener redisMessageListener) {
+        return new MessageListenerAdapter(redisMessageListener);
+    }
+
+    @Bean
+    RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory,
+                                                                RedisMessageListener redisMessageListener) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(redisConnectionFactory);
+        container.addMessageListener(redisMessageListener, new ChannelTopic("pubsub:chat-message"));
+        return container;
+    }
+
 }

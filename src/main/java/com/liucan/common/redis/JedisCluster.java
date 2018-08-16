@@ -2,6 +2,7 @@ package com.liucan.common.redis;
 
 import lombok.Setter;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -549,5 +550,31 @@ public class JedisCluster {
             e.printStackTrace();
             return 0;
         }
+    }
+
+    /**
+     * pub/sub发送频道消息
+     *
+     * @param channel 键
+     * @param message 移除多少个
+     */
+    public void convertAndSend(String channel, Object message) {
+        redisTemplate.convertAndSend(channel, message);
+    }
+
+    public RedisSerializer<?> getKeySerializer() {
+        return redisTemplate.getKeySerializer();
+    }
+
+    public RedisSerializer<?> getHashKeySerializer() {
+        return redisTemplate.getHashKeySerializer();
+    }
+
+    public RedisSerializer<?> getValueSerializer() {
+        return redisTemplate.getValueSerializer();
+    }
+
+    public RedisSerializer<String> getStringSerializer() {
+        return redisTemplate.getStringSerializer();
     }
 }
