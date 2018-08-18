@@ -556,10 +556,10 @@ public class JedisCluster {
      * pub/sub发送频道消息
      *
      * @param channel 键
-     * @param message 移除多少个
+     * @param object 移除多少个
      */
-    public void convertAndSend(String channel, Object message) {
-        redisTemplate.convertAndSend(channel, message);
+    public void convertAndSend(String channel, Object object) {
+        redisTemplate.convertAndSend(channel, object);
     }
 
     public RedisSerializer<?> getKeySerializer() {

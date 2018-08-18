@@ -4,7 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSONObject;
 import com.liucan.common.dubbo.BootDubboServiceImpl;
 import com.liucan.common.redis.JedisCluster;
-import com.liucan.common.redis.RedisPubSubImpl;
+import com.liucan.common.redis.RedisPubSub;
 import com.liucan.common.response.CommonResponse;
 import com.liucan.domain.Person;
 import com.liucan.service.UserInfoJdbcTemplate;
@@ -35,7 +35,7 @@ public class MyRestController {
     @Reference
     private BootDubboServiceImpl bootDubboService;
     @Autowired
-    private RedisPubSubImpl redisPubSub;
+    private RedisPubSub redisPubSub;
 
     @Cacheable(value = "userInfo")
     @GetMapping("/find_name")
@@ -85,7 +85,7 @@ public class MyRestController {
 
     @GetMapping("redisPubSub")
     public CommonResponse redisPubSub(@RequestParam("message") String message) {
-        redisPubSub.publish(message);
+        redisPubSub.publish(CommonResponse.ok(message));
         return CommonResponse.ok();
     }
 }

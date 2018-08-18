@@ -1,8 +1,11 @@
 package com.liucan.common.websocket;
 
 import com.alibaba.fastjson.JSONObject;
+import com.liucan.common.redis.RedisPubSub;
 import com.liucan.domain.PalyloadMsg;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -15,11 +18,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author liucan
  * @date 2018/8/12
  * @brief websocket处理器
+ *        1.用redis的pub/sub来处理2个用户分布式通信
  */
 @Slf4j
+@Component
 public class WebSocketHandlerImpl extends TextWebSocketHandler {
     //用户列表
     private ConcurrentHashMap<Integer, WebSocketSession> userMap = new ConcurrentHashMap<>();
+
+    @Autowired
+    private RedisPubSub redisPubSub;
 
     /**
      * 建立连接后
@@ -34,7 +42,7 @@ public class WebSocketHandlerImpl extends TextWebSocketHandler {
             PalyloadMsg palyloadMsg = new PalyloadMsg();
             palyloadMsg.setUserId(userId);
             palyloadMsg.setMsg("成功建立websocket连接");
-            sendMessageToUser(palyloadMsg);
+            sendMessageToUser(palyloadMsg, false);
         }
     }
 
@@ -48,7 +56,7 @@ public class WebSocketHandlerImpl extends TextWebSocketHandler {
 
             PalyloadMsg palyloadMsg = JSONObject.parseObject(message.getPayload(), PalyloadMsg.class);
             if (palyloadMsg != null) {
-                sendMessageToUser(palyloadMsg);
+                sendMessageToUser(palyloadMsg, true);
             }
         } catch (Exception e) {
             log.error("[websocket]收到socket消息，解析出现异常，session：{}，message:{}", session, message);
@@ -85,29 +93,39 @@ public class WebSocketHandlerImpl extends TextWebSocketHandler {
 
     /**
      * 发送单个socket消息
+     * @param usePubSub 是否用redis-pub/sub
      */
-    public boolean sendMessageToUser(PalyloadMsg palyloadMsg) {
+    public boolean sendMessageToUser(PalyloadMsg palyloadMsg, boolean usePubSub) {
         if (palyloadMsg == null) {
             return false;
         }
         Integer userId = palyloadMsg.getUserId();
         String msg = palyloadMsg.getMsg();
+        if (userId == null || msg == null) {
+            return false;
+        }
         WebSocketSession session = userMap.get(userId);
-        if (session == null) {
-            log.error("[websocket]发送socket消息失败，找不到用户，userId：{}", userId);
-            return false;
+        if (session != null) {
+            if (!session.isOpen()) {
+                log.error("[websocket]发送socket消息失败，用户不在线，userId：{}", userId);
+                return false;
+            }
+            try {
+                session.sendMessage(new TextMessage(msg));
+                log.info("[websocket]发送socket消息成功，userId：{}，message:{}", userId, msg);
+            } catch (Exception e) {
+                log.error("[websocket]发送socket消息异常，userId：{}，message:{}", userId, msg, e);
+                return false;
+            }
+        } else {
+            if (usePubSub) {
+                log.info("[websocket]发送socket消息失败，找不到用户，尝试发送redis-pub/sub, userId：{}", userId);
+                redisPubSub.publish(palyloadMsg);
+            } else {
+                log.error("[websocket]发送socket消息失败，找不到用户，userId：{}", userId);
+            }
         }
-        if (!session.isOpen()) {
-            log.error("[websocket]发送socket消息失败，用户不在线，userId：{}", userId);
-            return false;
-        }
-        try {
-            session.sendMessage(new TextMessage(msg));
-            log.info("[websocket]发送socket消息成功，userId：{}，message:{}", userId, msg);
-        } catch (Exception e) {
-            log.error("[websocket]发送socket消息异常，userId：{}，message:{}", userId, msg, e);
-            return false;
-        }
+
         return true;
     }
 

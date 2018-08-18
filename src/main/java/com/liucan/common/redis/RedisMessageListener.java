@@ -1,5 +1,8 @@
 package com.liucan.common.redis;
 
+import com.alibaba.fastjson.JSONObject;
+import com.liucan.common.websocket.WebSocketHandlerImpl;
+import com.liucan.domain.PalyloadMsg;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
@@ -16,21 +19,33 @@ import org.springframework.stereotype.Component;
  *            此时client以阻塞的方式等待“publish端”的消息；甚至需要在额外的线程中使用。
  *          3.消息发布者，即publish客户端，无需独占链接
  *          4.spring封装的pub/sub里面消息订阅者其实就是在额外线程里面执行的，可打断点调试
- *          5.缺点是消息不是持久化的，发送就没有了
+ *          5.Pub/Sub功能缺点是消息不是持久化的，发送就没有了
  */
 @Slf4j
 @Component
 public class RedisMessageListener implements MessageListener {
     @Autowired
     private JedisCluster jedisCluster;
+    @Autowired
+    private WebSocketHandlerImpl webSocketHandler;
 
     /**
      * 订阅消息
      */
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        String msg = (String) jedisCluster.getKeySerializer().deserialize(message.getChannel());
-        String channel = (String) jedisCluster.getValueSerializer().deserialize(message.getBody());
-        log.info("[redis订阅者/发布者]订阅者收到消息,channel:{}, msg:{}", channel, msg);
+        String channel = (String) jedisCluster.getKeySerializer().deserialize(message.getChannel());
+        String pattern1 = (String) jedisCluster.getKeySerializer().deserialize(pattern);
+        String msg = (String) jedisCluster.getValueSerializer().deserialize(message.getBody());
+        log.info("[redis订阅者/发布者]订阅者收到消息,channel:{}, pattern:{}, msg:{}", channel, pattern1, msg);
+
+        try {
+            PalyloadMsg palyloadMsg = JSONObject.parseObject(msg, PalyloadMsg.class);
+            if (palyloadMsg != null) {
+                webSocketHandler.sendMessageToUser(palyloadMsg, false);
+            }
+        } catch (Exception e) {
+            log.error("[redis订阅者/发布者]订阅者收到消息,转换palyloadMsg异常,channel:{}, pattern:{}, msg:{}", channel, pattern1, msg, e);
+        }
     }
 }
