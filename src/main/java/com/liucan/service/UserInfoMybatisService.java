@@ -16,7 +16,7 @@ import java.util.List;
  * @brief
  */
 @Service
-public class UserInfoMybatis {
+public class UserInfoMybatisService {
     @Autowired
     private UserInfoMapper userInfoMapper;
     @Autowired

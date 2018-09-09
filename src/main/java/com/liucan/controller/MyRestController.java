@@ -7,8 +7,8 @@ import com.liucan.common.redis.JedisCluster;
 import com.liucan.common.redis.RedisPubSub;
 import com.liucan.common.response.CommonResponse;
 import com.liucan.domain.Person;
-import com.liucan.service.UserInfoJdbcTemplate;
-import com.liucan.service.UserInfoMybatis;
+import com.liucan.service.UserInfoJdbcTemplateService;
+import com.liucan.service.UserInfoMybatisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,9 +25,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/bootlearn")
 public class MyRestController {
     @Autowired
-    private UserInfoJdbcTemplate userInfoJdbcTemplate;
+    private UserInfoJdbcTemplateService userInfoJdbcTemplateService;
     @Autowired
-    private UserInfoMybatis userInfoMybatis;
+    private UserInfoMybatisService userInfoMybatisService;
     @Autowired
     private JedisCluster jedisCluster;
     @Autowired
@@ -40,18 +40,18 @@ public class MyRestController {
     @Cacheable(value = "userInfo")
     @GetMapping("/find_name")
     public String findName(@RequestParam("user_id") Integer userId) {
-        return userInfoJdbcTemplate.queryUser(userId);
+        return userInfoJdbcTemplateService.queryUser(userId);
     }
 
     @GetMapping("/find_name1")
     public CommonResponse findName1(@RequestParam("user_id") Integer userId) {
-        return userInfoMybatis.getName(userId);
+        return userInfoMybatisService.getName(userId);
     }
 
     @Cacheable(value = "userInfo")
     @GetMapping("/find_phone")
     public CommonResponse findPhone(@RequestParam("user_id") Integer userId) {
-        return userInfoMybatis.getUserPhone(userId);
+        return userInfoMybatisService.getUserPhone(userId);
     }
 
     @PostMapping("/redis_set")

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
  *        你可以直接使用@Autowired来注入到你自己的bean中来使用
  */
 @Service
-public class UserInfoJdbcTemplate {
+public class UserInfoJdbcTemplateService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

@@ -10,12 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @date 2018/7/8
  * @brief
  */
-public class UserInfoMybatisTest extends BootApplicationTests {
+public class UserInfoMybatisServiceTest extends BootApplicationTests {
     @Autowired
-    private UserInfoMybatis userInfoMybatis;
+    private UserInfoMybatisService userInfoMybatisService;
 
     @Test
     public void getUserPhone() {
-        CommonResponse commonResponse = userInfoMybatis.getUserPhone(1231313);
+        CommonResponse commonResponse = userInfoMybatisService.getUserPhone(1231313);
     }
 }

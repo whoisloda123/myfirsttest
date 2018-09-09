@@ -1,6 +1,6 @@
 package com.liucan.common.dubbo;
 
-import com.liucan.service.UserInfoMybatis;
+import com.liucan.service.UserInfoMybatisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class BootDubboServiceImpl implements IBootDubboService {
     @Autowired
-    private UserInfoMybatis userInfoMybatis;
+    private UserInfoMybatisService userInfoMybatisService;
 
     @Override
     public String getUserName(Integer userId) {
-        return userInfoMybatis.getUserPhone(userId).toString();
+        return userInfoMybatisService.getUserPhone(userId).toString();
     }
 }
