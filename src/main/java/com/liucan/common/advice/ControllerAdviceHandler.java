@@ -31,7 +31,7 @@ public class ControllerAdviceHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     CommonResponse handleException(Exception e) {
-        log.error(e.getMessage(), e);
+        log.error("系统错误", e);
         return CommonResponse.error("系统错误");
     }
 
@@ -40,7 +40,7 @@ public class ControllerAdviceHandler {
      */
     @ExceptionHandler(BizException.class)
     CommonResponse handleBusinessException(BizException e) {
-        log.error(e.getMessage(), e);
+        log.error("业务错误", e);
         return CommonResponse.error("业务系统错误");
     }
 
