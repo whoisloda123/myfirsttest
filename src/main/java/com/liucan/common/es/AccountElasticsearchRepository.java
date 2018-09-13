@@ -16,8 +16,8 @@ import java.util.List;
  *          第一个By作为分隔符来指示实际标准的开始。在非常基础的层次上，您可以定义实体属性的条件并将它们与And和连接起来Or。
  *        3.类似于mybatis-generator生成的文件
  */
-public interface AccountElasticsearchRepository extends ElasticsearchRepository<AccountInfo, String> {
+public interface AccountElasticsearchRepository extends ElasticsearchRepository<AccountInfo, Integer> {
     List<AccountInfo> findAccountInfosByAgeBetween(Integer first, Integer second);
 
-    Page<AccountInfo> findAccountInfoByFirstname(Pageable pageable);
+    Page<AccountInfo> findAccountInfoByFirstname(String firstName, Pageable pageable);
 }

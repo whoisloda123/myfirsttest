@@ -14,6 +14,7 @@ import java.io.Serializable;
  *            https://www.cnblogs.com/guozp/p/8686904.html
  *            https://blog.csdn.net/laoyang360/article/details/52244917
  *            https://blog.csdn.net/wwd0501/article/details/78652850
+ *            https://www.jianshu.com/p/4e412f48e820
  *          2.index：相当于mysql数据库，type：相当于表，document：相当于一行数据，filed：相当于一列
  *          3.shards：分区，replicas：分区复制
  *          4.@Document注解之后，默认情况下这个实体中所有的属性都会被建立索引、并且分词,
