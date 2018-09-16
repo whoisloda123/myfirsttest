@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RedisMessageListener implements MessageListener {
     @Autowired
-    private JedisCluster jedisCluster;
+    private LedisCluster ledisCluster;
     @Autowired
     private WebSocketHandlerImpl webSocketHandler;
 
@@ -34,9 +34,9 @@ public class RedisMessageListener implements MessageListener {
      */
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        String channel = (String) jedisCluster.getKeySerializer().deserialize(message.getChannel());
-        String pattern1 = (String) jedisCluster.getKeySerializer().deserialize(pattern);
-        String msg = (String) jedisCluster.getValueSerializer().deserialize(message.getBody());
+        String channel = (String) ledisCluster.getKeySerializer().deserialize(message.getChannel());
+        String pattern1 = (String) ledisCluster.getKeySerializer().deserialize(pattern);
+        String msg = (String) ledisCluster.getValueSerializer().deserialize(message.getBody());
         log.info("[redis订阅者/发布者]订阅者收到消息,channel:{}, pattern:{}, msg:{}", channel, pattern1, msg);
 
         try {

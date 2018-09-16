@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @brief redis集群
  */
 @Setter
-public class JedisCluster {
+public class LedisCluster {
     private RedisTemplate<String, Object> redisTemplate;
 
     /**

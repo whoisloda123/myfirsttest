@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class RedisPubSub {
     protected final String channel = "pubsub:chat-message";
     @Autowired
-    protected JedisCluster jedisCluster;
+    protected LedisCluster ledisCluster;
 
     /**
      * 发布消息
@@ -23,6 +23,6 @@ public class RedisPubSub {
     public void publish(Object object) {
         String msg = JSONObject.toJSONString(object);
         log.info("[redis订阅者/发布者]发布者消息,channel:{}, msg:{}", channel, msg);
-        jedisCluster.convertAndSend(channel, msg);
+        ledisCluster.convertAndSend(channel, msg);
     }
 }
