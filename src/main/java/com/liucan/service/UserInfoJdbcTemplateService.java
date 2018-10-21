@@ -1,6 +1,5 @@
 package com.liucan.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserInfoJdbcTemplateService {
-    @Autowired
+    //@Autowired
     private JdbcTemplate jdbcTemplate;
 
     public String queryUser(int userId) {

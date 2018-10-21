@@ -24,13 +24,8 @@ import java.util.List;
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "mysql")
-@PropertySource(value = "classpath:properties/mysql.properties")
+@PropertySource(value = "classpath:properties/druid.properties")
 public class DruidConfig {
-    private String driver;
-    private String url;
-    private String username;
-    private String password;
-
     //连接池配置
     //初始化大小，最小，最大
     private Integer initialSize;
@@ -63,11 +58,6 @@ public class DruidConfig {
     @Bean(destroyMethod = "close")
     public DruidDataSource dataSource() {
         DruidDataSource dataSource = new DruidDataSource();
-        dataSource.setUrl(url);
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-        dataSource.setDriverClassName(driver);
-
         //configuration
         if (initialSize != null) {
             dataSource.setInitialSize(initialSize);
