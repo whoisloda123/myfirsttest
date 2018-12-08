@@ -49,4 +49,11 @@ public class CommonResponse implements Serializable {
         response.setMessage(message);
         return response;
     }
+
+    public static CommonResponse error(int code, String message) {
+        CommonResponse response = new CommonResponse();
+        response.setCode(code);
+        response.setMessage(message);
+        return response;
+    }
 }

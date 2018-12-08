@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,22 +32,25 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) throws Exception {
+        //已经通过自定义注解+aop实现是否需要用户登录
         String url = request.getRequestURI().substring(request.getContextPath().length());
         log.info("[拦截器]拦截请求：{}，执行preHandle,开始执行拦截处理", url);
-
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equalsIgnoreCase("uid")) {
-                    log.info("[拦截器]拦截请求：{}，执行preHandle,拦截处理完成，用户已经登录uid:{}", url, cookie.getValue());
-                    return true;
-                }
-            }
-        }
-
-        log.error("[拦截器]拦截请求：{},执行preHandle, 拦截处理完成，用户还未登录", url);
-        response.sendRedirect("login");
-        return false;
+        return true;
+//
+//        Cookie[] cookies = request.getCookies();
+//        if (cookies != null) {
+//            for (Cookie cookie : cookies) {
+//                if (cookie.getName().equalsIgnoreCase("uid")) {
+//                    log.info("[拦截器]拦截请求：{}，执行preHandle,拦截处理完成，用户已经登录uid:{}", url, cookie.getValue());
+//                    return true;
+//                }
+//            }
+//        }
+//
+//        log.error("[拦截器]拦截" +
+//                "请求：{},执行preHandle, 拦截处理完成，用户还未登录", url);
+//        response.sendRedirect("login");
+//        return false;
     }
 
     /**

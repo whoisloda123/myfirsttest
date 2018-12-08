@@ -1,6 +1,8 @@
 package com.liucan.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.liucan.common.annotation.LoginCheck;
+import com.liucan.common.annotation.UserId;
 import com.liucan.common.dubbo.BootDubboServiceImpl;
 import com.liucan.common.redis.LedisCluster;
 import com.liucan.common.redis.RedisPubSub;
@@ -103,6 +105,12 @@ public class MyRestController {
     public CommonResponse springRedis() {
         redisTemplateSerice.SpringRedis();
         return CommonResponse.ok();
+    }
+
+    @GetMapping("annotaiton")
+    @LoginCheck
+    public CommonResponse annotaiton(@UserId Integer userId) {
+        return CommonResponse.ok(userId);
     }
 }
 
