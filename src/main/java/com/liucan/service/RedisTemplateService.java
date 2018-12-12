@@ -23,10 +23,10 @@ import java.util.Map;
  */
 @Slf4j
 @Service
-public class RedisTemplateSerice {
+public class RedisTemplateService {
     private final RedisTemplate redisTemplate;
 
-    public RedisTemplateSerice(RedisTemplate redisTemplate) {
+    public RedisTemplateService(RedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
@@ -116,6 +116,7 @@ public class RedisTemplateSerice {
 
         //pipeline一起执行
         redisTemplate.executePipelined((RedisConnection e) -> {
+
             String key = "hkey-a";
             e.hGetAll(key.getBytes());
             return null;

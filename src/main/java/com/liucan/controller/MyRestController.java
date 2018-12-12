@@ -8,7 +8,7 @@ import com.liucan.common.redis.LedisCluster;
 import com.liucan.common.redis.RedisPubSub;
 import com.liucan.common.response.CommonResponse;
 import com.liucan.domain.Person;
-import com.liucan.service.RedisTemplateSerice;
+import com.liucan.service.RedisTemplateService;
 import com.liucan.service.UserInfoJdbcTemplateService;
 import com.liucan.service.UserInfoMybatisService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class MyRestController {
     private final KafkaTemplate kafkaTemplate;
     private final BootDubboServiceImpl bootDubboService;
     private final RedisPubSub redisPubSub;
-    private final RedisTemplateSerice redisTemplateSerice;
+    private final RedisTemplateService redisTemplateService;
 
     public MyRestController(UserInfoJdbcTemplateService userInfoJdbcTemplateService,
                             UserInfoMybatisService userInfoMybatisService,
@@ -39,14 +39,14 @@ public class MyRestController {
                             KafkaTemplate kafkaTemplate,
                             BootDubboServiceImpl bootDubboService,
                             RedisPubSub redisPubSub,
-                            RedisTemplateSerice redisTemplateSerice) {
+                            RedisTemplateService redisTemplateService) {
         this.userInfoJdbcTemplateService = userInfoJdbcTemplateService;
         this.userInfoMybatisService = userInfoMybatisService;
         this.ledisCluster = ledisCluster;
         this.kafkaTemplate = kafkaTemplate;
         this.bootDubboService = bootDubboService;
         this.redisPubSub = redisPubSub;
-        this.redisTemplateSerice = redisTemplateSerice;
+        this.redisTemplateService = redisTemplateService;
     }
 
     @Cacheable(value = "userInfo")
@@ -103,7 +103,7 @@ public class MyRestController {
 
     @GetMapping("spring-redis")
     public CommonResponse springRedis() {
-        redisTemplateSerice.SpringRedis();
+        redisTemplateService.SpringRedis();
         return CommonResponse.ok();
     }
 
