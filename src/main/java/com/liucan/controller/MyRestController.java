@@ -16,6 +16,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import static com.liucan.config.CachingConfig.ENTRY_TTL_1M;
+
 /**
  * @Author: liucan
  * @Date: 2018/7/6
@@ -49,7 +51,7 @@ public class MyRestController {
         this.redisTemplateService = redisTemplateService;
     }
 
-    @Cacheable(value = "userInfo")
+    @Cacheable(cacheNames = ENTRY_TTL_1M, cacheManager = "redisCacheManager", keyGenerator = "keyGenerator")
     @GetMapping("/find_name")
     public String findName(@RequestParam("user_id") Integer userId) {
         return userInfoJdbcTemplateService.queryUser(userId);

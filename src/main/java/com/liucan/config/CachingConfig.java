@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
@@ -16,6 +15,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.lang.reflect.Method;
 import java.time.Duration;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author liucan
@@ -31,8 +32,8 @@ import java.time.Duration;
 @Configuration
 @EnableCaching
 public class CachingConfig extends CachingConfigurerSupport {
-    private static final Integer ENTRY_TTL = 30; //key的过期时间
-
+    public static final String ENTRY_TTL_1M = "entry_ttl_1m"; //key的过期时间
+    public static final String ENTRY_TTL_2M = "entry_ttl_2m"; //key的过期时间
     /**
      * 自定义key生成策略，如果在Cache注解上没有指定key的话会调用keyGenerator自动生成
      * 类名+方法名+参数(适用于分布式缓存)，默认key生成策略分布式下有可能重复被覆盖
@@ -57,17 +58,22 @@ public class CachingConfig extends CachingConfigurerSupport {
      * cacheManager:用RedisCacheManager
      */
     @Bean
-    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory,
-                                     Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer) {
-        return new RedisCacheManager(RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory),
-                redisCacheConfiguration(jackson2JsonRedisSerializer));
+    public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory,
+                                          Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer) {
+        Map<String, RedisCacheConfiguration> map = new TreeMap<>();
+        map.put(ENTRY_TTL_1M, redisCacheConfiguration(jackson2JsonRedisSerializer, 1));
+        map.put(ENTRY_TTL_2M, redisCacheConfiguration(jackson2JsonRedisSerializer, 2));
+        return RedisCacheManager.builder(redisConnectionFactory)
+                .withInitialCacheConfigurations(map)
+                .build();
     }
 
-    private RedisCacheConfiguration redisCacheConfiguration(Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer) {
+    private RedisCacheConfiguration redisCacheConfiguration(Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer,
+                                                            int minutes) {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig();
         redisCacheConfiguration.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()));
         redisCacheConfiguration.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer));
-        redisCacheConfiguration.entryTtl(Duration.ofMinutes(ENTRY_TTL));
+        redisCacheConfiguration.entryTtl(Duration.ofMinutes(minutes));
         return redisCacheConfiguration;
     }
 }
