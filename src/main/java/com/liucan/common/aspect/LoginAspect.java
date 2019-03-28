@@ -15,6 +15,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 /**
+ * 可以用aop实现
+ * 也可以用interceptor实现
+ * 原则上都是拦截方法
  * @author liucan
  * @version 18-12-8
  */

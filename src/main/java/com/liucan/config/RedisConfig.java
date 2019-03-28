@@ -30,6 +30,7 @@ import java.util.Set;
  * @author liucan
  * @date 2018/7/1
  * @brief redis配置
+ * http://youzhixueyuan.com/redis-high-availability.html
  *        1.redis集群对象JedisCluster不支持事务，但是，集群里边的每个节点支持事务。
  *          集群不支持个人理解因为在事务里面操作可以在不同的节点，
  *          ,对于多个key的操作,在redis集群中,仍然无法使用事务,保证其原子性，保证不被其他命令插进来
