@@ -30,7 +30,6 @@ import java.util.Set;
  * @author liucan
  * @date 2018/7/1
  * @brief redis配置
- * http://youzhixueyuan.com/redis-high-availability.html
  *        1.redis集群对象JedisCluster不支持事务，但是，集群里边的每个节点支持事务。
  *          集群不支持个人理解因为在事务里面操作可以在不同的节点，
  *          ,对于多个key的操作,在redis集群中,仍然无法使用事务,保证其原子性，保证不被其他命令插进来
@@ -38,10 +37,13 @@ import java.util.Set;
  *          而redis是key-value类型的，没有必要
  *        3.redis集群不支持pipeline管道，个人理解也是因为集群原因，批量操作位于不同的slot的时候会失败，因为slot在
  *          不同的node，但也支持单个节点，但是操作比较麻烦，可以通过计算key对应的slot，通过slot找到对应节点的jedis
- *          然后进行批量操作
+ *          然后进行批量操作,相当于不支持多个key的操作
  *        4.redisCluster来说，是不可以对所有键进行scan操作的,可以针对其他数据类型，比如hash, zset，进行一系列hscan，zscan操作
  *          非要扫描的话，可以通过JedisCluster集群的节点，对单个节点进行分别扫描
- *        5.参考：
+ *        5.redis集群投票机制：
+ *              所有master参与，每个master都和其他master连接上了的，如果半数以上的master认为某个节点挂掉，就真的挂掉了
+ *        6.参考：
+ *        http://youzhixueyuan.com/redis-high-availability.html
  *          https://www.cnblogs.com/EasonJim/p/7803067.html
  *          http://blog.51cto.com/aiilive/1627455
  *          https://www.aliyun.com/jiaocheng/788298.html
