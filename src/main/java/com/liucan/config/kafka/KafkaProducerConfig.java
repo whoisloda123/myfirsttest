@@ -16,6 +16,7 @@ import java.util.Map;
 /**
  * @author liucan
  * @date 2018/7/29
+ * 参考：https://www.cnblogs.com/likehua/p/3999538.html
  * @brief kafka producer配置
  */
 @Configuration
