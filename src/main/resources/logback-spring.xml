@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!--参考：http://tengj.top/2017/04/05/springboot7/-->
     <contextName>logback-boot</contextName>
     <property name="log.path" value="/var/log/java/boot"/>
     <!--输出到控制台-->
