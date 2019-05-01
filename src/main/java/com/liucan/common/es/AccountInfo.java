@@ -11,6 +11,7 @@ import java.io.Serializable;
  * @date 2018/9/9
  * @brief es索引实体类, 某个实体需要建立索引，只需要加上@Document、@Field注解即可
  * https://www.cnblogs.com/luxiaoxun/p/4869509.html
+ * https://blog.csdn.net/sdksdk0/article/details/78469190
  *          1.参考资料：https://blog.csdn.net/hololens/article/details/78932628，
  *            https://www.cnblogs.com/guozp/p/8686904.html
  *            https://blog.csdn.net/laoyang360/article/details/52244917
