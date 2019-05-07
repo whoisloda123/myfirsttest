@@ -35,7 +35,7 @@
         </javaTypeResolver>
 
         <!--生成mode-->
-        <javaModelGenerator targetPackage="com.liucan.mybatis.javalearn.mode" targetProject="src/main/java">
+        <javaModelGenerator targetPackage="com.liucan.persist.javalearn.mode" targetProject="src/main/java">
             <property name="enableSubPackages" value="false"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
@@ -46,7 +46,7 @@
         </sqlMapGenerator>
 
         <!--生成doa-->
-        <javaClientGenerator targetPackage="com.liucan.mybatis.javalearn.dao" type="XMLMAPPER"
+        <javaClientGenerator targetPackage="com.liucan.persist.javalearn.dao" type="XMLMAPPER"
                              targetProject="src/main/java">
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
