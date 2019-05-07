@@ -1,4 +1,4 @@
-package com.liucan.boot.service.serviceRegistry;
+package com.liucan.boot.service.zk;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.*;
@@ -15,13 +15,13 @@ import java.util.concurrent.CountDownLatch;
  *        3.分布式锁，分布式队列等等
  */
 @Slf4j
-public class ServiceRegistry implements Watcher {
+public class ZkServiceRegistry implements Watcher {
     private static final int SESSION_TIMEOUT = 30000;
     private static final String REGISTRY_PATH = "/registry";
     private static CountDownLatch latch = new CountDownLatch(1);
     private ZooKeeper zk;
 
-    public ServiceRegistry(String zkServers) {
+    public ZkServiceRegistry(String zkServers) {
         try {
             log.info("[服务注册]开始连接zookeeper");
             //禁用sasl认证，否则会报错,不禁用不影响运行

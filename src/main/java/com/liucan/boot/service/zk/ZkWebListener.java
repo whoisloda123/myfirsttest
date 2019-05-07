@@ -1,4 +1,4 @@
-package com.liucan.boot.service.serviceRegistry;
+package com.liucan.boot.service.zk;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,24 +13,24 @@ import javax.servlet.ServletContextListener;
  * @brief 注册服务
  */
 @Component
-public class WebListener implements ServletContextListener {
+public class ZkWebListener implements ServletContextListener {
     @Value("${server.address}")
     private String serverAddress;
     @Value("${server.port}")
     private int serverPort;
-    @Value("${server.name}")
+    @Value("${spring.application.name}")
     private String serverName;
 
     @Autowired
-    private ServiceRegistry serviceRegistry;
+    private ZkServiceRegistry zkServiceRegistry;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        serviceRegistry.register("java-learn", String.format("%s:%d/%s", serverAddress, serverPort, serverName));
+        zkServiceRegistry.register("java-learn", String.format("%s:%d/%s", serverAddress, serverPort, serverName));
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        serviceRegistry.close();
+        zkServiceRegistry.close();
     }
 }

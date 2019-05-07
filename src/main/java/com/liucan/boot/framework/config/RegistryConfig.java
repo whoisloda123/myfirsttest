@@ -1,6 +1,6 @@
 package com.liucan.boot.framework.config;
 
-import com.liucan.boot.service.serviceRegistry.ServiceRegistry;
+import com.liucan.boot.service.zk.ZkServiceRegistry;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +18,7 @@ public class RegistryConfig {
     private String servers;
 
     @Bean
-    public ServiceRegistry serviceRegistry() {
-        return new ServiceRegistry(servers);
+    public ZkServiceRegistry serviceRegistry() {
+        return new ZkServiceRegistry(servers);
     }
 }
