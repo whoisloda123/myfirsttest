@@ -6,13 +6,21 @@ import org.apache.zookeeper.*;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * @author liucan
- * @date 2018/7/23
- * @brief zookeeper服务注册
- *        zooKeeper用处
- *        1.配置管理
- *        2.分布式服务集群管理，服务注册，监控，master选举等等
- *        3.分布式锁，分布式队列等等
+ * zookeeper:分布式系统中的协调系统，提供配置管理、分布式服务的集群管理，服务注册、监控、分布式锁和分布式队列
+ *  本身就是集群模式
+ * 参考：https://www.cnblogs.com/felixzh/p/5869212.html
+ *  1.文件系统：
+ *      核心是类似于linux文件系统，节点类型：持久化目录节点 、持久化顺序目录节点 、临时目录节点、临时顺序目录节点
+ *  2.通知机制
+ *      只关心监听他的目录节点，当目录节点的发生改变（数据改变、被删除、子目录节点增加删除）会通知
+ *  3.配置管理
+ *      服务节点的配置（mysql的ip，port，redis的地址等）放zookeeper，且发生改变时会通知所有服务
+ *  4.集群管理(是否有机器退出和加入、选举master)
+ *      a.是否有机器退出和加入:所有机器在父目录下建立临时顺序子节点，监听父目录下子节点变化，所有临时节点加入和删除都会通知到其他节点
+ *      b.选举maser每次选最小节点即可
+ *  5.分布式锁
+ *      a.独占锁：创建 /distribute_lock节点成功的则获得锁，其他则监控该节点，释放锁则删除该节点，其他节点收到删除通知后进行创建 /distribute_lock节点
+ *      b.公平锁： /distribute_lock已经存在，创建该节点临时顺序子节点，和选举master一样的，最小节点获得锁，同时子节点监听比自己小一点的子节点
  */
 @Slf4j
 public class ZkServiceRegistry implements Watcher {
@@ -26,6 +34,7 @@ public class ZkServiceRegistry implements Watcher {
             log.info("[服务注册]开始连接zookeeper");
             //禁用sasl认证，否则会报错,不禁用不影响运行
             System.setProperty("zookeeper.sasl.client", "false");
+            //异步创建的
             zk = new ZooKeeper(zkServers, SESSION_TIMEOUT, this);
             latch.await(); //等待创建成功
         } catch (Exception e) {
