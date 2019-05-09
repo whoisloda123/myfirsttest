@@ -21,6 +21,9 @@ import java.util.concurrent.CountDownLatch;
  *  5.分布式锁
  *      a.独占锁：创建 /distribute_lock节点成功的则获得锁，其他则监控该节点，释放锁则删除该节点，其他节点收到删除通知后进行创建 /distribute_lock节点
  *      b.公平锁： /distribute_lock已经存在，创建该节点临时顺序子节点，和选举master一样的，最小节点获得锁，同时子节点监听比自己小一点的子节点
+ *  6.分布式队列
+ *      a.同步队列，当一个队列的成员都聚齐时，这个队列才可用，否则一直等待所有成员到达（在约定目录下创建临时目录节点，监听子节节点数目是否是我们要求的数目）
+ *      b.队列按照 FIFO 方式进行入队和出队操作(和分布式锁一样的，最小的先出队列)
  */
 @Slf4j
 public class ZkServiceRegistry implements Watcher {
