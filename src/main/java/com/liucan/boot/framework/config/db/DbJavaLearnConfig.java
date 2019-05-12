@@ -1,4 +1,4 @@
-package com.liucan.boot.framework.config;
+package com.liucan.boot.framework.config.db;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import org.apache.ibatis.session.SqlSessionFactory;

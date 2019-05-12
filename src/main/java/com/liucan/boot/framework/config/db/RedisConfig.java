@@ -1,4 +1,4 @@
-package com.liucan.boot.framework.config;
+package com.liucan.boot.framework.config.db;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

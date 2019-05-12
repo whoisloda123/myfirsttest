@@ -1,6 +1,6 @@
 package com.liucan.boot.service.zk;
 
-import com.liucan.boot.framework.config.ZkConfig;
+import com.liucan.boot.framework.config.zk.ZkConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.*;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.liucan.boot.framework.config;
+package com.liucan.boot.framework.config.zk;
 
 import lombok.Data;
 import org.springframework.context.annotation.Configuration;
