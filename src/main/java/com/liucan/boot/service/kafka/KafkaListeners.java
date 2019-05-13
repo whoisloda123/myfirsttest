@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author liucan
- * @date 2018/7/29
- * @brief kafka监听topic
+ * 原理:https://www.cnblogs.com/xifenglou/p/7251112.html
+ * spring:
  *        1.参考资料：https://blog.csdn.net/imgxr/article/details/80130878
  *        2.参考资料：https://blog.csdn.net/lifuxiangcaohui/article/details/51374862
  */
