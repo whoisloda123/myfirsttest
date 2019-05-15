@@ -1,0 +1,19 @@
+package com.liucan.boot.service.kafka;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+/**
+ * A类业务处理订单
+ *
+ * @author liucan
+ * @version 19-5-15
+ */
+@Slf4j
+@Service
+public class KafkaConsumerOrderA extends AbstractKafkaConsumerOrder {
+    @Override
+    public void process(String message) {
+        log.info("[A类订单业务]收到订单消息了,message:{}", message);
+    }
+}
