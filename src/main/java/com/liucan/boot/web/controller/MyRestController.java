@@ -8,6 +8,7 @@ import com.liucan.boot.mode.Person;
 import com.liucan.boot.service.UserInfoJdbcTemplateService;
 import com.liucan.boot.service.UserInfoMybatisService;
 import com.liucan.boot.service.dubbo.BootDubboServiceImpl;
+import com.liucan.boot.service.kafka.KafkaService;
 import com.liucan.boot.service.redis.LedisCluster;
 import com.liucan.boot.service.redis.RedisPubSub;
 import com.liucan.boot.service.redis.RedisTemplateService;
@@ -33,6 +34,7 @@ public class MyRestController {
     private final BootDubboServiceImpl bootDubboService;
     private final RedisPubSub redisPubSub;
     private final RedisTemplateService redisTemplateService;
+    private final KafkaService kafkaService;
 
     public MyRestController(UserInfoJdbcTemplateService userInfoJdbcTemplateService,
                             UserInfoMybatisService userInfoMybatisService,
@@ -40,7 +42,8 @@ public class MyRestController {
                             KafkaTemplate kafkaTemplate,
                             BootDubboServiceImpl bootDubboService,
                             RedisPubSub redisPubSub,
-                            RedisTemplateService redisTemplateService) {
+                            RedisTemplateService redisTemplateService,
+                            KafkaService kafkaService) {
         this.userInfoJdbcTemplateService = userInfoJdbcTemplateService;
         this.userInfoMybatisService = userInfoMybatisService;
         this.ledisCluster = ledisCluster;
@@ -48,6 +51,7 @@ public class MyRestController {
         this.bootDubboService = bootDubboService;
         this.redisPubSub = redisPubSub;
         this.redisTemplateService = redisTemplateService;
+        this.kafkaService = kafkaService;
     }
 
     @Cacheable(cacheNames = CachingConfig.ENTRY_TTL_1M, cacheManager = "redisCacheManager", keyGenerator = "keyGenerator")
@@ -88,7 +92,10 @@ public class MyRestController {
         String json = JSONObject.toJSONString(person);
         String key = "student";
         log.info("[kafka]发送kafka消息topic:{}, key:{}, data：{}", kafkaTemplate.getDefaultTopic(), key, json);
-        return CommonResponse.ok(kafkaTemplate.send(kafkaTemplate.getDefaultTopic(), key, json));
+        kafkaTemplate.send(kafkaTemplate.getDefaultTopic(), key, json);
+        kafkaService.send("test-topic", key, json);
+
+        return CommonResponse.ok();
     }
 
     @GetMapping("dubbo")
