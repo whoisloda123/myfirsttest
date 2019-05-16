@@ -1,5 +1,6 @@
 package com.liucan.boot.service.kafka;
 
+import com.liucan.boot.service.kafka.common.AbstractKafkaConsumerLogger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

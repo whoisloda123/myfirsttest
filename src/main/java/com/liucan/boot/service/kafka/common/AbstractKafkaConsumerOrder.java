@@ -1,4 +1,4 @@
-package com.liucan.boot.service.kafka;
+package com.liucan.boot.service.kafka.common;
 
 /**
  * 订单类消费者

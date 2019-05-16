@@ -176,6 +176,13 @@
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
             <version>2.0.4.RELEASE</version>
         </dependency>
+
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

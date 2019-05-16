@@ -1,4 +1,4 @@
-package com.liucan.boot.service.kafka;
+package com.liucan.boot.service.kafka.common;
 
 import kafka.consumer.Consumer;
 import kafka.consumer.ConsumerConfig;
@@ -8,11 +8,15 @@ import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,47 +89,71 @@ public class KafkaService {
 
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
+    private final ApplicationContext applicationContext;
+
     private ConsumerConnector consumerConnector;
 
     @PostConstruct
     public void init() {
+        Map<String, List<IKafkaConsumer>> kafkaConsumerMap = kafkaConsumers();
         consumerConnector = Consumer.createJavaConsumerConnector(consumerConfig);
 
-        Map<String, Integer> topicCountMap = new HashMap<>();  // 描述读取哪个topic，需要几个线程读
+        Map<String, Integer> topicCountMap = new HashMap<>();  //描述读取哪个topic，需要几个线程读
         topicCountMap.put("boot1", 2);
         topicCountMap.put("boot2", 2);
         //创建消息处理的流
         Map<String, List<KafkaStream<byte[], byte[]>>> messageStreams = consumerConnector.createMessageStreams(topicCountMap);
-        messageStreams.forEach((topic, listStream) -> listStream.forEach(kafkaStream -> threadPoolTaskExecutor.submit(() -> {
-            // 为每个stream启动一个线程消费消息
-            ////其实执行不到，因为上面的hasNext会block
-            kafkaStream.forEach(messageAndMetadata -> {
-                String key = new String(messageAndMetadata.key());
-                String message = new String(messageAndMetadata.message());
-                log.info("[kafka]pull到消息，topic：{}, partition:{}, offset:{}, key:{}, message:{}",
-                        messageAndMetadata.topic(), messageAndMetadata.partition(), messageAndMetadata.offset(), key, message);
-                //处理message
-                try {
 
-                } catch (Exception e) {
-                    log.info("[kafka]处理消息异常,messageAndMetadata:{}", messageAndMetadata, e);
-                }
+        messageStreams.forEach((topic, listPartition) -> {
+            List<IKafkaConsumer> iKafkaConsumers = kafkaConsumerMap.get(topic);
+            listPartition.forEach(kafkaStream -> {
+                //为每个stream(partition)启动一个线程消费消息
+                new Thread(() -> kafkaStream.forEach(messageAndMetadata -> {
+                    String key = new String(messageAndMetadata.key());
+                    String message = new String(messageAndMetadata.message());
+                    log.info("[kafka]拉取到消息，topic：{}, partition:{}, offset:{}, key:{}, message:{}",
+                            messageAndMetadata.topic(), messageAndMetadata.partition(), messageAndMetadata.offset(), key, message);
+                    //处理message
+                    if (CollectionUtils.isNotEmpty(iKafkaConsumers)) {
+                        threadPoolTaskExecutor.submit(() -> iKafkaConsumers.forEach(consumer -> {
+                            try {
+                                consumer.process(message);
+                            } catch (Exception e) {
+                                log.error("[kafka]处理消息异常,messageAndMetadata:{}", messageAndMetadata, e);
+                            }
+                        }));
+                    }
+                })).start();
             });
-//            while (true) {
-//                try {
-//                    kafkaStream.forEach(item -> {
-//                        String message = new String(item.message());
-//                    });
-//                } catch (Exception e) {
-//
-//                }
-//            }
-        })));
+            log.info("[kafka]消息已被监听,topic:{}", topic);
+        });
     }
 
     @PreDestroy
     public void close() {
         consumerConnector.shutdown();
+    }
+
+    private Map<String, List<IKafkaConsumer>> kafkaConsumers() {
+        Map<String, IKafkaConsumer> kafkaConsumerMap = applicationContext.getBeansOfType(IKafkaConsumer.class);
+        HashMap<String, List<IKafkaConsumer>> topicConsumerMap = new HashMap<>();
+        if (MapUtils.isEmpty(kafkaConsumerMap)) {
+            return topicConsumerMap;
+        }
+
+        kafkaConsumerMap.values().forEach(consumer -> {
+            List<IKafkaConsumer> iKafkaConsumers;
+            String topic = consumer.topic();
+            if (!topicConsumerMap.containsKey(topic)) {
+                iKafkaConsumers = new ArrayList<>();
+                iKafkaConsumers.add(consumer);
+                topicConsumerMap.put(topic, iKafkaConsumers);
+            } else {
+                iKafkaConsumers = topicConsumerMap.get(topic);
+                iKafkaConsumers.add(consumer);
+            }
+        });
+        return topicConsumerMap;
     }
 
     public void send(String topic, String key, String message) {
