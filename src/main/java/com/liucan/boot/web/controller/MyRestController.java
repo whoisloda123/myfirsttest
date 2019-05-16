@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 /**
  * @Author: liucan
  * @Date: 2018/7/6
- * @Description:
  */
 @Slf4j
 @RestController

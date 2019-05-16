@@ -18,12 +18,12 @@ import javax.validation.Valid;
  * @brief
  */
 @Controller
-@RequestMapping("/bootlearn")
+@RequestMapping("bootlearn")
 public class MyController {
     /**
      * spring-boot默认的资源模板路径resources/templates
      */
-    @GetMapping(value = "/person")
+    @GetMapping("person")
     public ModelAndView person() {
         return new ModelAndView("person", "command", new Person());
     }
@@ -33,7 +33,7 @@ public class MyController {
         return new ModelAndView("websocket", "command", new Person());
     }
 
-    @PostMapping(value = "/addPerson")
+    @PostMapping("addPerson")
     public String addPerson(@ModelAttribute("person") @Valid Person person,
                             BindingResult bindingResult,
                             ModelMap model) {
