@@ -93,6 +93,14 @@ public class KafkaService {
 
     private ConsumerConnector consumerConnector;
 
+    /**
+     * 里面会自己维护消费的offset(保存zk里面)
+     * 如果是自己处理的话一般
+     * 1.topic通过分区算法找到partition
+     * 2.通过partition找到leader partition
+     * 3.找到上一次消费的offset,开始消费
+     * 4.消费完,commit给broker,保存offset到zk
+     */
     @PostConstruct
     public void init() {
         Map<String, List<IKafkaConsumer>> kafkaConsumerMap = kafkaConsumers();
