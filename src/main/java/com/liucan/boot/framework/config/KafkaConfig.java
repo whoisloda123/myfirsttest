@@ -12,8 +12,6 @@ import java.util.Properties;
 /**
  * @author liucan
  * @date 2018/7/29
- * 参考：https://www.cnblogs.com/likehua/p/3999538.html
- * @brief kafka producer配置
  */
 @Configuration
 public class KafkaConfig {
@@ -48,14 +46,12 @@ public class KafkaConfig {
         kConProperties.setProperty("group.id", group);
         kConProperties.setProperty("auto.commit.enable", "true");
         kConProperties.setProperty("auto.commit.interval.ms", "30000");
-        kConProperties.setProperty("consumer.timeout.ms", "5000");
+        //设置ConsumerIterator的hasNext的超时时间,不设置则永远阻塞直到有新消息来
+        //kConProperties.setProperty("consumer.timeout.ms", "5000");
         kConProperties.setProperty("auto.offset.reset", "largest");
         return new ConsumerConfig(kConProperties);
     }
 
-    /**
-     * kafka-client
-     */
     @Bean
     public Producer<String, String> kafkaProducer(ProducerConfig producerConfig) {
         return new Producer<>(producerConfig);

@@ -1,9 +1,8 @@
 package com.liucan.boot.service.zk;
 
-import com.liucan.boot.framework.config.zk.ZkConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -45,8 +44,8 @@ public class ZkRegistryService implements Watcher {
     private static final String REGISTRY_PATH = "/registry";
     private CountDownLatch registryLock = new CountDownLatch(1);
     private ZooKeeper zk;
-    @Autowired
-    private ZkConfig zkConfig;
+    @Value("${registry.servers}")
+    private String zkConnect;
 
     @PostConstruct
     public void init() {
@@ -55,8 +54,8 @@ public class ZkRegistryService implements Watcher {
             //禁用sasl认证，否则会报错,不禁用不影响运行
             System.setProperty("zookeeper.sasl.client", "false");
             //异步创建的
-            zk = new ZooKeeper(zkConfig.getServers(), SESSION_TIMEOUT, this);
-            //zk = new ZooKeeper("192.168.2.105:2181,192.168.2.105:2182,192.168.2.105:2183", SESSION_TIMEOUT, this);
+            zk = new ZooKeeper(zkConnect, SESSION_TIMEOUT, this);
+            ;
             log.info("[zk服务注册]等待连接zookeeper.....");
             registryLock.await(100, TimeUnit.SECONDS);
         } catch (Exception e) {

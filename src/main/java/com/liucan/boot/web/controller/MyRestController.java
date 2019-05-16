@@ -62,11 +62,11 @@ public class MyRestController {
         return ledisCluster.get(key);
     }
 
-    @PostMapping("kafka")
+    @GetMapping("kafka")
     public CommonResponse kafka() {
         for (int i = 0; i < 50; i++) {
-            kafkaService.send("test-topic", String.valueOf(i), "kafka消息" + i);
-            kafkaService.send("test-topic1", String.valueOf(i), "kafka消息" + i);
+            kafkaService.send("topic-logger", String.valueOf(i), "kafka消息" + i);
+            kafkaService.send("topic-order", String.valueOf(i), "kafka消息" + i);
         }
         return CommonResponse.ok();
     }

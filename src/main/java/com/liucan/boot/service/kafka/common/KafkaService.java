@@ -1,12 +1,10 @@
 package com.liucan.boot.service.kafka.common;
 
-import kafka.consumer.Consumer;
-import kafka.consumer.ConsumerConfig;
-import kafka.consumer.KafkaStream;
+import kafka.consumer.*;
 import kafka.javaapi.consumer.ConsumerConnector;
 import kafka.javaapi.producer.Producer;
+import kafka.message.MessageAndMetadata;
 import kafka.producer.KeyedMessage;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -74,24 +72,25 @@ import java.util.Map;
  *      1.At most once最多一次,读完消息马上commit,然后在处理消息,如果处理消息异常,则下次不会在读到上一次消息了
  *      2.At least once(默认方式)最少一次,读完消息,然后处理消息,如果因异常导致没有commit,下次会重新读取到
  *      3.Exactly once刚好一次,比较难
- *
- * spring:
- * 1.参考资料：https://blog.csdn.net/imgxr/article/details/80130878
- * 2.参考资料：https://blog.csdn.net/lifuxiangcaohui/article/details/51374862
  */
 @Slf4j
 @Service
-@AllArgsConstructor
 public class KafkaService {
     private final Producer<String, String> producer;
-
     private final ConsumerConfig consumerConfig;
-
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
-
     private final ApplicationContext applicationContext;
-
     private ConsumerConnector consumerConnector;
+
+    public KafkaService(Producer<String, String> producer,
+                        ConsumerConfig consumerConfig,
+                        ThreadPoolTaskExecutor threadPoolTaskExecutor,
+                        ApplicationContext applicationContext) {
+        this.producer = producer;
+        this.consumerConfig = consumerConfig;
+        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+        this.applicationContext = applicationContext;
+    }
 
     /**
      * 里面会自己维护消费的offset(保存zk里面)
@@ -107,8 +106,8 @@ public class KafkaService {
         consumerConnector = Consumer.createJavaConsumerConnector(consumerConfig);
 
         Map<String, Integer> topicCountMap = new HashMap<>();  //描述读取哪个topic，需要几个线程读
-        topicCountMap.put("boot1", 2);
-        topicCountMap.put("boot2", 2);
+        topicCountMap.put("topic-logger", 2);
+        topicCountMap.put("topic-order", 2);
         //创建消息处理的流
         Map<String, List<KafkaStream<byte[], byte[]>>> messageStreams = consumerConnector.createMessageStreams(topicCountMap);
 
@@ -116,22 +115,31 @@ public class KafkaService {
             List<IKafkaConsumer> iKafkaConsumers = kafkaConsumerMap.get(topic);
             listPartition.forEach(kafkaStream -> {
                 //为每个stream(partition)启动一个线程消费消息
-                new Thread(() -> kafkaStream.forEach(messageAndMetadata -> {
-                    String key = new String(messageAndMetadata.key());
-                    String message = new String(messageAndMetadata.message());
-                    log.info("[kafka]拉取到消息，topic：{}, partition:{}, offset:{}, key:{}, message:{}",
-                            messageAndMetadata.topic(), messageAndMetadata.partition(), messageAndMetadata.offset(), key, message);
-                    //处理message
-                    if (CollectionUtils.isNotEmpty(iKafkaConsumers)) {
-                        threadPoolTaskExecutor.submit(() -> iKafkaConsumers.forEach(consumer -> {
-                            try {
-                                consumer.process(message);
-                            } catch (Exception e) {
-                                log.error("[kafka]处理消息异常,messageAndMetadata:{}", messageAndMetadata, e);
+                new Thread(() -> {
+                    ConsumerIterator<byte[], byte[]> iterator = kafkaStream.iterator();
+                    //it.hasNext()取决于consumer.timeout.ms的值,默认为-1(阻塞等待),超时会抛出ConsumerTimeoutException异常
+                    try {
+                        while (iterator.hasNext()) {
+                            MessageAndMetadata<byte[], byte[]> messageAndMetadata = iterator.next();
+                            String key = new String(messageAndMetadata.key());
+                            String message = new String(messageAndMetadata.message());
+                            log.info("[kafka]拉取到消息，topic：{}, partition:{}, offset:{}, key:{}, message:{}",
+                                    messageAndMetadata.topic(), messageAndMetadata.partition(), messageAndMetadata.offset(), key, message);
+                            //处理message
+                            if (CollectionUtils.isNotEmpty(iKafkaConsumers)) {
+                                threadPoolTaskExecutor.submit(() -> iKafkaConsumers.forEach(consumer -> {
+                                    try {
+                                        consumer.process(message);
+                                    } catch (Exception e) {
+                                        log.error("[kafka]处理消息异常,messageAndMetadata:{}", messageAndMetadata, e);
+                                    }
+                                }));
                             }
-                        }));
+                        }
+                    } catch (ConsumerTimeoutException e) {
+                        log.error("[kafka]消息监听超时,topic:{}", topic, e);
                     }
-                })).start();
+                }).start();
             });
             log.info("[kafka]消息已被监听,topic:{}", topic);
         });
