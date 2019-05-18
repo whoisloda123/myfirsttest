@@ -15,11 +15,9 @@ import java.util.Properties;
  */
 @Configuration
 public class KafkaConfig {
-    @Value("${spring.kafka.bootstrap-servers}")
+    @Value("${kafka.broker.servers}")
     private String brokers;
-    @Value("${spring.kafka.template.default-topic}")
-    private String topic;
-    @Value("${spring.kafka.consumer.group-id}")
+    @Value("${kafka.consumer.group-id}")
     private String group;
     @Value("${registry.servers}")
     private String zkConnect;
