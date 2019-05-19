@@ -3,7 +3,6 @@ package com.liucan.boot.framework.config.db;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.liucan.boot.service.redis.LedisCluster;
 import com.liucan.boot.service.redis.RedisMessageListener;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -13,7 +12,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.connection.*;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
@@ -27,26 +26,45 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author liucan
- * @date 2018/7/1
- * @brief redis配置
- *        1.redis集群对象JedisCluster不支持事务，但是，集群里边的每个节点支持事务。
- *          集群不支持个人理解因为在事务里面操作可以在不同的节点，
- *          ,对于多个key的操作,在redis集群中,仍然无法使用事务,保证其原子性，保证不被其他命令插进来
- *        2.事务不支持回滚，个人理解因为redis不是类似于mysql是关系型，支持业务回滚，
- *          而redis是key-value类型的，没有必要
- *        3.redis集群不支持pipeline管道，个人理解也是因为集群原因，批量操作位于不同的slot的时候会失败，因为slot在
- *          不同的node，但也支持单个节点，但是操作比较麻烦，可以通过计算key对应的slot，通过slot找到对应节点的jedis
- *          然后进行批量操作,相当于不支持多个key的操作
- *        4.redisCluster来说，是不可以对所有键进行scan操作的,可以针对其他数据类型，比如hash, zset，进行一系列hscan，zscan操作
- *          非要扫描的话，可以通过JedisCluster集群的节点，对单个节点进行分别扫描
- *        5.redis集群投票机制：
- *              所有master参与，每个master都和其他master连接上了的，如果半数以上的master认为某个节点挂掉，就真的挂掉了
- *        6.参考：
- *        http://youzhixueyuan.com/redis-high-availability.html
- *          https://www.cnblogs.com/EasonJim/p/7803067.html
- *          http://blog.51cto.com/aiilive/1627455
- *          https://www.aliyun.com/jiaocheng/788298.html
+ * 一.redis集群哨兵
+ *  参考：http://youzhixueyuan.com/redis-high-availability.html
+ *  1.每个key会对应一个slot，总共16384个slot均分到不同的节点上面
+ *  2.每个节点master，有slave
+ *
+ * 二.群投票机制
+ *  1.所有master参与，每个master都和其他master连接上了的，如果半数以上的master认为某个节点挂掉，就真的挂掉了
+ *
+ * 三.单线程为何还快
+ *  1.完全基于内存
+ *  2.使用epoll多路 I/O 复用模型来处理多并发客户端
+ *  3.不存在多进程或者多线程导致的切换而消耗CPU
+ *
+ * 四.持久化
+ *  1.RDB快照:过一段时间所有数据所生成的数据快照保存到dump.rdb文件,会单独创建(fork)一个子进程来进行持久化
+ *  2.AOF:每隔一段时间（默认每一秒）将执行写命令append写入文件，在恢复的时候可重新执行命令
+ *
+ * 五.分布式锁
+ *
+ * 六.缓存问题
+ *  1.缓存雪崩：缓存同一时间大面积的失效，这个时候又来了一波请求，结果请求都怼到数据库上，从而导致数据库连接异常
+ *      解决方法：给缓存的失效时间，加上一个随机值，避免集体失效。
+ *  2.缓存穿透：黑客故意去请求缓存中不存在的数据，导致所有的请求都怼到数据库上，从而数据库连接异常
+ *      解决方法：为空也保存到内存里面
+ *  3.缓存击穿：某个热销商品过期瞬间，很多请求怼到数据库上
+ *  等
+ *
+ * 七.事务
+ *   1.集群不支持事务
+ *      a.事务里面操作可以在不同节点,对于多个key的操作,保证不了不会被其他命令插进来,无法保证其原子性,但集群里边的每个节点支持事务，
+ *      b.事务不支持,因为redis不是关系型数据库，是key-value不关心业务，没有必要
+ *   2.集群不支持pipeline管道
+ *      a.批量操作位于不同的slot的时候会失败,因为slot在不同的node,但也支持单个节点
+ *      b.单个节点操作：通过key计算出slot，然后通过slot找到对应的节点，然后在节点上面操作
+ *   3.集群不支持对所有键进行scan操作
+ *
+ * 二.spring-redis
+ *  参考：https://www.cnblogs.com/EasonJim/p/7803067.html（spring-redis）
+ *      http://blog.51cto.com/aiilive/1627455（spring-redis）
  *
  */
 @Data
@@ -195,8 +213,8 @@ public class RedisConfig {
      * 实例化RedisTemplate对象
      */
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+    public StringRedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        StringRedisTemplate redisTemplate = new StringRedisTemplate();
         //如果不配置Serializer，那么存储的时候缺省使用String，如果用User类型存储，那么会提示错误User can't cast to String！
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(jackson2JsonRedisSerializer());
@@ -207,16 +225,6 @@ public class RedisConfig {
         redisTemplate.setEnableTransactionSupport(true);
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         return redisTemplate;
-    }
-
-    /**
-     * 实例化jedisCluster对象
-     */
-    @Bean
-    public LedisCluster jedisCluster(RedisTemplate<String, Object> redisTemplate) {
-        LedisCluster ledisCluster = new LedisCluster();
-        ledisCluster.setRedisTemplate(redisTemplate);
-        return ledisCluster;
     }
 
     /**

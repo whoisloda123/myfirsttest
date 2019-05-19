@@ -3,10 +3,11 @@ package com.liucan.boot.service.redis;
 import com.alibaba.fastjson.JSONObject;
 import com.liucan.boot.framework.websocket.WebSocketHandlerImpl;
 import com.liucan.boot.mode.PalyloadMsg;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,20 +24,19 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
+@AllArgsConstructor
 public class RedisMessageListener implements MessageListener {
-    @Autowired
-    private LedisCluster ledisCluster;
-    @Autowired
-    private WebSocketHandlerImpl webSocketHandler;
+    private final StringRedisTemplate redisTemplate;
+    private final WebSocketHandlerImpl webSocketHandler;
 
     /**
      * 订阅消息
      */
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        String channel = (String) ledisCluster.getKeySerializer().deserialize(message.getChannel());
-        String pattern1 = (String) ledisCluster.getKeySerializer().deserialize(pattern);
-        String msg = (String) ledisCluster.getValueSerializer().deserialize(message.getBody());
+        String channel = (String) redisTemplate.getKeySerializer().deserialize(message.getChannel());
+        String pattern1 = (String) redisTemplate.getKeySerializer().deserialize(pattern);
+        String msg = (String) redisTemplate.getValueSerializer().deserialize(message.getBody());
         log.info("[redis订阅者/发布者]订阅者收到消息,channel:{}, pattern:{}, msg:{}", channel, pattern1, msg);
 
         try {

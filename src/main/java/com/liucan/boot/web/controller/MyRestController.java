@@ -7,13 +7,13 @@ import com.liucan.boot.service.UserInfoJdbcTemplateService;
 import com.liucan.boot.service.UserInfoMybatisService;
 import com.liucan.boot.service.dubbo.BootDubboServiceImpl;
 import com.liucan.boot.service.kafka.common.KafkaService;
-import com.liucan.boot.service.redis.LedisCluster;
 import com.liucan.boot.service.redis.RedisPubSub;
 import com.liucan.boot.service.redis.RedisTemplateService;
 import com.liucan.boot.web.common.CommonResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class MyRestController {
     private final UserInfoJdbcTemplateService userInfoJdbcTemplateService;
     private final UserInfoMybatisService userInfoMybatisService;
-    private final LedisCluster ledisCluster;
+    private final StringRedisTemplate redisTemplate;
     private final BootDubboServiceImpl bootDubboService;
     private final RedisPubSub redisPubSub;
     private final RedisTemplateService redisTemplateService;
@@ -52,13 +52,13 @@ public class MyRestController {
 
     @PostMapping("redis_set")
     public CommonResponse redisSet(String key, String value) {
-        ledisCluster.set(key, CommonResponse.ok(value));
+        redisTemplate.opsForValue().set(key, value);
         return CommonResponse.ok();
     }
 
     @GetMapping("redis_set")
     public Object redisSet(String key) {
-        return ledisCluster.get(key);
+        return redisTemplate.opsForValue().get(key);
     }
 
     @GetMapping("kafka")
