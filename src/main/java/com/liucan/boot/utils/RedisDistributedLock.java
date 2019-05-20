@@ -46,9 +46,7 @@ public class RedisDistributedLock {
      * @return 是否获取成功
      */
     public static void DistributedLock(Jedis jedis, String lockKey, String randomValue, int expireTime) {
-        while (!jedis.set(lockKey, randomValue, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME, expireTime).equals(LOCK_SUCCESS)) {
-
-        }
+        while (!RedisDistributedLock.tryDistributedLock(jedis, lockKey, randomValue, expireTime)) ;
     }
 
     /**

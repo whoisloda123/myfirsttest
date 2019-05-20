@@ -92,6 +92,12 @@ import java.util.Set;
  *      e.allkeys-random：从数据集中任意选择数据淘汰
  *      f.no-enviction（驱逐）：禁止驱逐数据
  *
+ * 八.发布订阅
+ *   1.消息订阅者，即subscribe客户端，需要独占链接，即进行subscribe期间，redis-client无法穿插其他操作，
+ *      此时client以阻塞的方式等待“publish端”的消息；甚至需要在额外的线程中使用
+ *   2.消息发布者，即publish客户端，无需独占链接
+ *   3.Pub/Sub功能缺点是消息不是持久化的，发送就没有了
+ *
  * 二.spring-redis
  *  参考：https://www.cnblogs.com/EasonJim/p/7803067.html（spring-redis）
  *      http://blog.51cto.com/aiilive/1627455（spring-redis）
@@ -207,18 +213,25 @@ public class RedisConfig {
     }
 
     /**
-     * 单机版connectionFactory
+     * 单点配置
      */
-    //@Bean
-    public JedisConnectionFactory jedisStandaloneConnectionFactory() {
+    @Bean
+    public RedisStandaloneConfiguration redisStandaloneConfiguration() {
         RedisStandaloneConfiguration standaloneConfiguration = new RedisStandaloneConfiguration();
         standaloneConfiguration.setHostName(hostName);
         standaloneConfiguration.setPort(port);
         //standaloneConfiguration.setPassword(RedisPassword.of(password));
+        return standaloneConfiguration;
+    }
 
+    /**
+     * 单机版connectionFactory
+     */
+    //@Bean
+    public JedisConnectionFactory jedisStandaloneConnectionFactory(RedisStandaloneConfiguration redisStandaloneConfiguration) {
         JedisClientConfiguration.JedisClientConfigurationBuilder jedisClientConfiguration = JedisClientConfiguration.builder();
         jedisClientConfiguration.connectTimeout(Duration.ofMillis(timeout));
-        return new JedisConnectionFactory(standaloneConfiguration, jedisClientConfiguration.build());
+        return new JedisConnectionFactory(redisStandaloneConfiguration, jedisClientConfiguration.build());
     }
 
     /**
