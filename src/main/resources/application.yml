@@ -1,0 +1,42 @@
+#spring-boot通用配置文件（习惯优于配置）
+server:
+  address: 127.0.0.1
+  port: 8080
+  servlet:
+    context-path: /boot
+pagehelper:
+  helper-dialect: mysql
+  reasonable: ture
+  support-methods-arguments: ture
+  params: count=countSql
+#zookeeper集群
+registry:
+  servers: 192.168.2.105:2181,192.168.2.105:2182,192.168.2.105:2183
+#kafka集群
+kafka:
+  broker:
+    servers: 192.168.2.105:9092,192.168.2.105:9093,192.168.2.105:9094
+  consumer:
+    group-id: boot
+#dubbo
+spring:
+  application:
+    name: boot
+  dubbo: #es配置
+    registry:
+      address: zookeeper://${registry.servers}
+    protocol:
+      name: dubbo
+      port: 20880
+    scan: com.liucan.common.dubbo
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+      cluster-name: boot
+      #默认 9300 是节点之间的通信端口 。9200 是支持 Restful HTTP 的接口
+      cluster-nodes: 192.168.2.105:9300,192.168.2.105:9301,192.168.2.105:9302
+      properties:
+        transport:
+          tcp:
+            connect_timeout: 120s
