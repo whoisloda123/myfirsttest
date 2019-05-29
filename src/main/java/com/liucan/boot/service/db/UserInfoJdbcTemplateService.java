@@ -1,4 +1,4 @@
-package com.liucan.boot.service;
+package com.liucan.boot.service.db;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;

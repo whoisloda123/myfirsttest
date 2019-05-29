@@ -1,4 +1,4 @@
-package com.liucan.boot.service;
+package com.liucan.boot.service.db;
 
 import com.liucan.boot.web.common.CommonResponse;
 import org.springframework.stereotype.Service;

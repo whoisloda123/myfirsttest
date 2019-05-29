@@ -1,4 +1,4 @@
-package com.liucan.boot.persist.javalearn.mode;
+package com.liucan.boot.persist.mybatis.javalearn.mode;
 
 import java.util.ArrayList;
 import java.util.List;

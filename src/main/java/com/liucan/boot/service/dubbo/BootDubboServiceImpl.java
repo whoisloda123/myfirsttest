@@ -1,6 +1,6 @@
 package com.liucan.boot.service.dubbo;
 
-import com.liucan.boot.service.UserInfoMybatisService;
+import com.liucan.boot.service.db.UserInfoMybatisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

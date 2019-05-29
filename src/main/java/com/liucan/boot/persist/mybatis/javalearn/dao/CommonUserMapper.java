@@ -1,7 +1,7 @@
-package com.liucan.boot.persist.javalearn.dao;
+package com.liucan.boot.persist.mybatis.javalearn.dao;
 
-import com.liucan.boot.persist.javalearn.mode.CommonUser;
-import com.liucan.boot.persist.javalearn.mode.CommonUserExample;
+import com.liucan.boot.persist.mybatis.javalearn.mode.CommonUser;
+import com.liucan.boot.persist.mybatis.javalearn.mode.CommonUserExample;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
