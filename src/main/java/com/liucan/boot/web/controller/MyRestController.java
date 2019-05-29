@@ -3,6 +3,7 @@ package com.liucan.boot.web.controller;
 import com.liucan.boot.framework.annotation.LoginCheck;
 import com.liucan.boot.framework.annotation.UserId;
 import com.liucan.boot.framework.config.CachingConfig;
+import com.liucan.boot.service.db.JooqService;
 import com.liucan.boot.service.db.UserInfoJdbcTemplateService;
 import com.liucan.boot.service.db.UserInfoMybatisService;
 import com.liucan.boot.service.dubbo.BootDubboServiceImpl;
@@ -32,6 +33,7 @@ public class MyRestController {
     private final RedisPubSub redisPubSub;
     private final RedisTemplateService redisTemplateService;
     private final KafkaService kafkaService;
+    private final JooqService jooqService;
 
     @Cacheable(cacheNames = CachingConfig.ENTRY_TTL_1M, cacheManager = "redisCacheManager", keyGenerator = "keyGenerator")
     @GetMapping("find_name")
@@ -91,6 +93,11 @@ public class MyRestController {
     @LoginCheck
     public CommonResponse annotaiton(@UserId Integer userId) {
         return CommonResponse.ok(userId);
+    }
+
+    @GetMapping("jooq")
+    public CommonResponse jooq(Integer userId) {
+        return CommonResponse.ok(jooqService.getUserName(userId));
     }
 }
 
