@@ -1,11 +1,15 @@
 package com.liucan.boot.framework.config.db;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import lombok.Data;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -35,19 +39,17 @@ import javax.sql.DataSource;
  * @author liucan
  * @version 2018/7/1
  */
+@Data
 @Configuration
 @EnableTransactionManagement
-@PropertySource(value = "classpath:properties/javaLearnDb.properties")
+@ConfigurationProperties(prefix = "java-learn")
+@PropertySource("classpath:properties/db.properties")
 @MapperScan(basePackages = "com.liucan.mybatis.javalearn.dao", sqlSessionFactoryRef = "javaLearnSqlSessionFactory")
 public class DbJavaLearnConfig {
     //javalearn
-    @Value("${javaLearn.driver}")
     private String driver;
-    @Value("${javaLearn.url}")
     private String url;
-    @Value("${javaLearn.username}")
     private String userName;
-    @Value("${javaLearn.password}")
     private String password;
 
     @Bean(destroyMethod = "close")
@@ -74,5 +76,10 @@ public class DbJavaLearnConfig {
     @Bean
     public DataSourceTransactionManager javaLearnTransactionManager(@Qualifier("javaLearnDataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
+    }
+
+    @Bean
+    public DSLContext javaLearnDSL(@Qualifier("javaLearnDataSource") DataSource dataSource) {
+        return DSL.using(dataSource, SQLDialect.MYSQL);
     }
 }

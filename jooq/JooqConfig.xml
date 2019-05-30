@@ -2,7 +2,7 @@
 <configuration>
     <jdbc>
         <driver>com.mysql.jdbc.Driver</driver>
-        <url>jdbc:mysql://192.168.2.105:3306/java_learn?useUnicode=true</url>
+        <url>jdbc:mysql://192.168.2.105:3306/amazon_data?useUnicode=true</url>
         <user>root</user>
         <password>123456</password>
     </jdbc>
@@ -19,11 +19,11 @@
             <name>org.jooq.util.mysql.MySQLDatabase</name>
 
             <!--include和exclude用于控制为数据库中哪些表生成代码-->
-            <includes>common_user</includes>
+            <includes>shop_info</includes>
             <!--<excludes></excludes>-->
 
             <!--数据库名称-->
-            <inputSchema>java_learn</inputSchema>
+            <inputSchema>amazon_data</inputSchema>
         </database>
 
         <generate>
@@ -39,7 +39,7 @@
 
         <target>
             <!--生成代码文件的包名及放置目录-->
-            <packageName>com.liucan.boot.persist.jooq.javalearn</packageName>
+            <packageName>com.liucan.boot.persist.jooq.amazondata</packageName>
             <directory>src/main/java</directory>
         </target>
     </generator>

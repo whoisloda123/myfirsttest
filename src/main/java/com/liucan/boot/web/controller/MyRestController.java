@@ -95,9 +95,14 @@ public class MyRestController {
         return CommonResponse.ok(userId);
     }
 
-    @GetMapping("jooq")
-    public CommonResponse jooq(Integer userId) {
+    @GetMapping("jooq1")
+    public CommonResponse jooq1(Integer userId) {
         return CommonResponse.ok(jooqService.getUserName(userId));
+    }
+
+    @GetMapping("jooq2")
+    public CommonResponse jooq2(Integer shopId) {
+        return CommonResponse.ok(jooqService.getShopName(shopId));
     }
 }
 
