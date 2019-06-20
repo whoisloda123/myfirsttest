@@ -15,7 +15,6 @@ import static com.liucan.boot.persist.jooq.javalearn.Tables.COMMON_USER;
  */
 @Service
 public class JooqService {
-
     private final DSLContext javaLearnDSL;
     private final DSLContext amazonDSL;
 
@@ -26,14 +25,16 @@ public class JooqService {
     }
 
     public String getUserName(Integer userId) {
-        CommonUserRecord commonUserRecord = javaLearnDSL.selectFrom(COMMON_USER)
+        CommonUserRecord commonUserRecord = javaLearnDSL
+                .selectFrom(COMMON_USER)
                 .where(COMMON_USER.ID.equal(userId))
                 .fetchOne();
         return commonUserRecord.getName();
     }
 
     public String getShopName(Integer shopId) {
-        ShopInfoRecord shopInfoRecord = amazonDSL.selectFrom(SHOP_INFO)
+        ShopInfoRecord shopInfoRecord = amazonDSL
+                .selectFrom(SHOP_INFO)
                 .where(SHOP_INFO.SHOP_ID.eq(shopId))
                 .fetchOne();
         return shopInfoRecord.getShopName();
