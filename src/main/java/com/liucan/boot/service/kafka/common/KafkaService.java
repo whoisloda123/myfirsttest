@@ -42,6 +42,24 @@ import java.util.Map;
  *      2.消息发送给leader,leader写入本地log
  *      3.followers从leader中pull消息,发送ack
  *      4.leader收到所有followers的ack后,提交commmin,然后返回producer,相当于要所有的followers都有消息才会commit
+ * d.消息发送类型
+ *      https://www.cnblogs.com/jasongj/p/7912348.html
+ *      https://www.jianshu.com/p/5d889a67dcd3
+ *      1.at-least-once:producer收到来自borker的确认消息,则任务发送成功,但可能会出现broker处理完消息了,但发送确认消息异常了
+ *          producer会重试,导致broker接收2次
+ *      2.at-most-once:不管producer发送消息返回超时或者失败,都不会重试
+ *      3.exactly-once:即使producer重试发送消息，消息也会保证最多一次地传递
+ *          实现方式:
+ *          a.幂等:
+ *              概念:单个paratition里面,不管producer发送多少次,都只会给写入一次
+ *              实现方式:brokder端维护一个序号,每条消息都有序号,如果发送的序号比当前最大的序号大1则表示是新消息保存,
+ *                      若大1以上,则认为乱序,小于则认为是老消息,抛弃掉
+ *              解决问题:
+ *                  a.Broker保存消息后，发送ACK前宕机，Producer认为消息未发送成功并重试，造成数据重复
+ *                  b.前一条消息发送失败，后一条消息发送成功，前一条消息重试后成功，造成数据乱序
+ *
+ *          b.事务:多个paratition的原子操作,发送批量消息到多个paratition要么全部成功要么全部失败
+ *              实现方式:
  *
  * 三.broker保存消息
  *  a..存储方式:物理上把 topic 分成一个或多个 patition（对应 server.properties 中的 num.partitions=3 配置）
