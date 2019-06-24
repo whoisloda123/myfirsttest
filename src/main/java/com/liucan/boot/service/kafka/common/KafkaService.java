@@ -97,6 +97,14 @@ import java.util.Map;
  *      1.一个topic，可以指定同一个key，这样消息只会发送到一个partition，但失去了集群优势
  *      2.在消费时，针对每个message不用启用多线程，否者一样会有错乱，针对partition的里面不同的key（不同的key根据分区算法，可能到同一个分区）
  *          的message，放到一个队列里面，顺序消费
+ *
+ * 六.数据堆积
+ *      1.查看消费堆积情况，bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group my-group
+ *      2.出现场景
+ *          重复消费：poll的数据业务处理时间不能超过kafka的max.poll.interval.ms，kafka0.10.2.1里面是300s
+ *              如果超时了则会失败，这样下次会从新消费，又失败，这样会一直重复消费
+ *          消费线程太少：
+ *      3.如何解决
  */
 @Slf4j
 @Service
