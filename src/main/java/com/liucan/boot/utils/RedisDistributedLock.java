@@ -1,17 +1,26 @@
 package com.liucan.boot.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 
 import java.util.Collections;
 
 /**
- * redis分布式锁
+ * 一.redis分布式锁
  * 相关资料https://www.cnblogs.com/linjiqin/p/8003838.html
+ * 二.redis分布式锁需要注意的事项
+ *  https://cloud.tencent.com/developer/article/1349732
+ *  1.加锁
+ *      正确：set（key, value, nx, px, time）
+ *      错误：setnx和setex执行
+ *      原因：没有保证2条指令的原子性，setnx后redis挂了，造成锁永远也解锁不了
+ *  2.解锁
+ *      正确：执行lua脚本语句，if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end
+ *      错误：判断key的value和期望的比较相等后，然后在删除key
+ *      原因：没有保证2条指令的原子性，在判断value相等后，刚好key过期然后其他地方获取到锁设置了新的value，然后导致删除了其他的锁
  */
+@Slf4j
 public class RedisDistributedLock {
-    private static final String LOCK_SUCCESS = "OK";
-    private static final String SET_IF_NOT_EXIST = "NX";
-    private static final String SET_WITH_EXPIRE_TIME = "PX";
     private static final Long RELEASE_SUCCESS = 1L;
 
     /**
@@ -26,12 +35,12 @@ public class RedisDistributedLock {
     public static boolean tryDistributedLock(Jedis jedis, String lockKey, String randomValue, int expireTime) {
         boolean bLock = false;
         try {
-            String result = jedis.set(lockKey, randomValue, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME, expireTime);
-            if (result.equals(LOCK_SUCCESS)) {
+            String result = jedis.set(lockKey, randomValue, "nx", "px", expireTime);
+            if (result.equals("ok")) {
                 bLock = true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("[分布式锁]尝试获取分布式锁异常，lockKey：{},randomValue:{}", lockKey, randomValue, e);
         }
         return bLock;
     }
