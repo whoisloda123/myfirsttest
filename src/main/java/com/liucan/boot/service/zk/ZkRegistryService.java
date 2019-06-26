@@ -12,7 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
- * zookeeper:分布式系统中的协调系统，提供配置管理、分布式服务的集群管理，zk服务注册、监控、分布式锁和分布式队列
+ * zookeeper:分布式系统中的协调系统，提供配置管理、集群管理(服务注册，服务加入和退出)、分布式锁和分布式队列
  *  本身就是集群模式
  * 参考：https://www.cnblogs.com/felixzh/p/5869212.html
  *  1.文件系统：
