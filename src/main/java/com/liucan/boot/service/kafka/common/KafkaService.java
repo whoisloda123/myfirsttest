@@ -105,6 +105,9 @@ import java.util.Map;
  *              如果超时了则会失败，这样下次会从新消费，又失败，这样会一直重复消费
  *          消费线程太少：
  *      3.如何解决
+ *
+ *  七.如何保证消息不丢失不重复
+ *  https://blog.csdn.net/weixin_38750084/article/details/82939435
  */
 @Slf4j
 @Service
