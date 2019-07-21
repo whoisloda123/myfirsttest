@@ -108,6 +108,14 @@ import java.util.Map;
  *
  *  七.如何保证消息不丢失不重复
  *  https://blog.csdn.net/weixin_38750084/article/details/82939435
+ *  https://msd.misuland.com/pd/2884250068896974728
+ *  https://www.e-learn.cn/content/qita/934559
+ *      1.消息丢失场景：
+ *          同步发送：发出消息后，必须阻塞等待收到通知后，才发送下一条消息，配置ack为1（只保证leader写入成功就commit,如果leader挂了）
+ *              解决：所有partition同步后才commit
+ *          异步发送：一直往缓冲区写，然后批量发送，如果配置成缓冲池一满，就清空缓冲池里的消息，会丢失消息
+ *              解决：不清空缓冲区，阻塞等待
+ *      1.也可以，用Exactly once只且一次，消息不丢失不重复，只且消费一次。
  */
 @Slf4j
 @Service
