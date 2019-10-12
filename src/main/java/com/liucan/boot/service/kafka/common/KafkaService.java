@@ -119,7 +119,7 @@ import java.util.Map;
  *
  *      1.消费端弄丢了数据 关闭自动提交offset，在自己处理完毕之后手动提交offset，这样就不会丢失数据
  *      2.一般要求设置4个参数来保证消息不丢失
- *       a.设置多个partition
+ *       a.设置每个partition有多个follower
  *       b.必须要至少有一个follower同步后，leader才能提交
  */
 @Slf4j
