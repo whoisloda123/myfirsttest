@@ -3,6 +3,9 @@ package com.liucan.boot.web.controller;
 import com.liucan.boot.framework.annotation.LoginCheck;
 import com.liucan.boot.framework.annotation.UserId;
 import com.liucan.boot.framework.config.CachingConfig;
+import com.liucan.boot.persist.mybatis.javalearn.dao.CommonUserMapper;
+import com.liucan.boot.persist.mybatis.javalearn.mode.CommonUser;
+import com.liucan.boot.persist.mybatis.javalearn.mode.CommonUserExample;
 import com.liucan.boot.service.db.JooqService;
 import com.liucan.boot.service.db.UserInfoJdbcTemplateService;
 import com.liucan.boot.service.db.UserInfoMybatisService;
@@ -13,9 +16,12 @@ import com.liucan.boot.service.redis.RedisTemplateService;
 import com.liucan.boot.web.common.CommonResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @Author: liucan
@@ -34,6 +40,7 @@ public class MyRestController {
     private final RedisTemplateService redisTemplateService;
     private final KafkaService kafkaService;
     private final JooqService jooqService;
+    private final CommonUserMapper commonUserMapper;
 
     @Cacheable(cacheNames = CachingConfig.ENTRY_TTL_1M, cacheManager = "redisCacheManager", keyGenerator = "keyGenerator")
     @GetMapping("find_name")
@@ -43,7 +50,13 @@ public class MyRestController {
 
     @GetMapping("find_name1")
     public CommonResponse findName1(@RequestParam("user_id") Integer userId) {
-        return userInfoMybatisService.getName(userId);
+        CommonUserExample ex = new CommonUserExample();
+        ex.createCriteria().andIdEqualTo(userId);
+        List<CommonUser> commonUsers = commonUserMapper.selectByExample(ex);
+        if (CollectionUtils.isNotEmpty(commonUsers)) {
+            return CommonResponse.ok(commonUsers.get(0).getName());
+        }
+        return CommonResponse.ERROR;
     }
 
     @Cacheable("userInfo")

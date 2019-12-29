@@ -1,10 +1,9 @@
 package com.liucan.boot.service.es;
 
-import com.github.pagehelper.Page;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
-import java.awt.print.Pageable;
 import java.util.List;
+
 
 /**
  * @author liucan
@@ -18,6 +17,4 @@ import java.util.List;
  */
 public interface AccountElasticsearchRepository extends ElasticsearchRepository<AccountInfo, Integer> {
     List<AccountInfo> findAccountInfosByAgeBetween(Integer first, Integer second);
-
-    Page<AccountInfo> findAccountInfoByFirstname(String firstName, Pageable pageable);
 }
