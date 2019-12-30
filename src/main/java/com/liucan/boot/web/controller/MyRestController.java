@@ -3,9 +3,7 @@ package com.liucan.boot.web.controller;
 import com.liucan.boot.framework.annotation.LoginCheck;
 import com.liucan.boot.framework.annotation.UserId;
 import com.liucan.boot.framework.config.CachingConfig;
-import com.liucan.boot.persist.mybatis.javalearn.dao.CommonUserMapper;
-import com.liucan.boot.persist.mybatis.javalearn.mode.CommonUser;
-import com.liucan.boot.persist.mybatis.javalearn.mode.CommonUserExample;
+import com.liucan.boot.persist.mybatis.mapper.CommonUserMapper;
 import com.liucan.boot.service.db.JooqService;
 import com.liucan.boot.service.db.UserInfoJdbcTemplateService;
 import com.liucan.boot.service.db.UserInfoMybatisService;
@@ -16,12 +14,9 @@ import com.liucan.boot.service.redis.RedisTemplateService;
 import com.liucan.boot.web.common.CommonResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * @Author: liucan
@@ -50,13 +45,8 @@ public class MyRestController {
 
     @GetMapping("find_name1")
     public CommonResponse findName1(@RequestParam("user_id") Integer userId) {
-        CommonUserExample ex = new CommonUserExample();
-        ex.createCriteria().andIdEqualTo(userId);
-        List<CommonUser> commonUsers = commonUserMapper.selectByExample(ex);
-        if (CollectionUtils.isNotEmpty(commonUsers)) {
-            return CommonResponse.ok(commonUsers.get(0).getName());
-        }
-        return CommonResponse.ERROR;
+        System.out.println(commonUserMapper.selectByName("刘灿"));
+        return CommonResponse.ok(commonUserMapper.selectList(null));
     }
 
     @Cacheable("userInfo")
@@ -111,11 +101,6 @@ public class MyRestController {
     @GetMapping("jooq1")
     public CommonResponse jooq1(Integer userId) {
         return CommonResponse.ok(jooqService.getUserName(userId));
-    }
-
-    @GetMapping("jooq2")
-    public CommonResponse jooq2(Integer shopId) {
-        return CommonResponse.ok(jooqService.getShopName(shopId));
     }
 }
 

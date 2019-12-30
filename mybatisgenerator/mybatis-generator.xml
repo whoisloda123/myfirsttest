@@ -5,7 +5,7 @@
 
 <!-- 配置生成器 -->
 <generatorConfiguration>
-    <properties resource="properties/javaLearnDb.properties"/>
+    <properties resource="properties/db.properties"/>
 
     <classPathEntry
             location="/home/liucan/.m2/repository/mysql/mysql-connector-java/6.0.6/mysql-connector-java-6.0.6.jar"/>
@@ -24,10 +24,10 @@
         </commentGenerator>
 
         <jdbcConnection
-                driverClass="${javaLearn.driver}"
-                connectionURL="${javaLearn.url}"
-                userId="${javaLearn.username}"
-                password="${javaLearn.password}">
+                driverClass="${java-learn.driver}"
+                connectionURL="${java-learn.url}"
+                userId="${java-learn.username}"
+                password="${java-learn.password}">
         </jdbcConnection>
 
         <javaTypeResolver type="org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl">
@@ -35,25 +35,31 @@
         </javaTypeResolver>
 
         <!--生成mode-->
-        <javaModelGenerator targetPackage="com.liucan.boot.persist.mybatis.javalearn.mode"
+        <javaModelGenerator targetPackage="com.liucan.boot.persist.mybatis.mode"
                             targetProject="src/main/java">
             <property name="enableSubPackages" value="false"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
-        <!--生成mapper-->
-        <sqlMapGenerator targetPackage="mapper.javalearn" targetProject="src/main/resources">
-            <property name="enableSubPackages" value="false"/>
-        </sqlMapGenerator>
+        <!--&lt;!&ndash;生成mapper&ndash;&gt;-->
+        <!--<sqlMapGenerator targetPackage="mapper.javalearn" targetProject="src/main/resources">-->
+        <!--<property name="enableSubPackages" value="false"/>-->
+        <!--</sqlMapGenerator>-->
 
-        <!--生成doa-->
-        <javaClientGenerator targetPackage="com.liucan.boot.persist.mybatis.javalearn.dao" type="XMLMAPPER"
-                             targetProject="src/main/java">
-            <property name="enableSubPackages" value="false"/>
-        </javaClientGenerator>
+        <!--&lt;!&ndash;生成doa&ndash;&gt;-->
+        <!--<javaClientGenerator targetPackage="com.liucan.boot.persist.mybatis.javalearn.dao" type="XMLMAPPER"-->
+        <!--targetProject="src/main/java">-->
+        <!--<property name="enableSubPackages" value="false"/>-->
+        <!--</javaClientGenerator>-->
 
         <!--生成的表-->
-        <table tableName="common_user">
+        <table tableName="common_user" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+        <table tableName="user_order" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
     </context>
 </generatorConfiguration>

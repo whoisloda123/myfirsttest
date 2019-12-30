@@ -1,6 +1,5 @@
 package com.liucan.boot.web.common;
 
-import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,7 +10,6 @@ import java.io.Serializable;
  * @brief 通用返回response
  *        加Serializable，是因为在用spring cache redis时候保存到redis的对象需要支持序列化
  */
-@Builder
 @Data
 public class CommonResponse implements Serializable {
     private int code; //返回code

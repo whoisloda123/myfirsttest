@@ -210,7 +210,7 @@
                     <!-- 是否覆盖 -->
                     <overwrite>true</overwrite>
                     <!-- 自动生成的配置 -->
-                    <configurationFile>mybatisgenerator/mybatis-generator-javalearn.xml</configurationFile>
+                    <configurationFile>mybatisgenerator/mybatis-generator.xml</configurationFile>
                 </configuration>
             </plugin>
 

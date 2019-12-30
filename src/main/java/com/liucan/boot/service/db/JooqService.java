@@ -1,12 +1,10 @@
 package com.liucan.boot.service.db;
 
-import com.liucan.boot.persist.jooq.amazondata.tables.records.ShopInfoRecord;
 import com.liucan.boot.persist.jooq.javalearn.tables.records.CommonUserRecord;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import static com.liucan.boot.persist.jooq.amazondata.Tables.SHOP_INFO;
 import static com.liucan.boot.persist.jooq.javalearn.Tables.COMMON_USER;
 
 /**
@@ -16,12 +14,9 @@ import static com.liucan.boot.persist.jooq.javalearn.Tables.COMMON_USER;
 @Service
 public class JooqService {
     private final DSLContext javaLearnDSL;
-    private final DSLContext amazonDSL;
 
-    public JooqService(@Qualifier("javaLearnDSL") DSLContext javaLearnDSL,
-                       @Qualifier("amazonDSL") DSLContext amazonDSL) {
+    public JooqService(@Qualifier("javaLearnDSL") DSLContext javaLearnDSL) {
         this.javaLearnDSL = javaLearnDSL;
-        this.amazonDSL = amazonDSL;
     }
 
     public String getUserName(Integer userId) {
@@ -30,13 +25,5 @@ public class JooqService {
                 .where(COMMON_USER.ID.equal(userId))
                 .fetchOne();
         return commonUserRecord.getName();
-    }
-
-    public String getShopName(Integer shopId) {
-        ShopInfoRecord shopInfoRecord = amazonDSL
-                .selectFrom(SHOP_INFO)
-                .where(SHOP_INFO.SHOP_ID.eq(shopId))
-                .fetchOne();
-        return shopInfoRecord.getShopName();
     }
 }

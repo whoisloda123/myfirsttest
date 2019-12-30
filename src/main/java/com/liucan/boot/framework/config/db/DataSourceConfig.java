@@ -1,12 +1,12 @@
 package com.liucan.boot.framework.config.db;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import lombok.Data;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
-import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -44,9 +44,8 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @ConfigurationProperties(prefix = "java-learn")
 @PropertySource("classpath:properties/db.properties")
-@MapperScan(basePackages = "com.liucan.mybatis.javalearn.dao", sqlSessionFactoryRef = "javaLearnSqlSessionFactory")
-public class DbJavaLearnConfig {
-    //javalearn
+@MapperScan(basePackages = "com.liucan.boot.persist.mybatis.mapper")
+public class DataSourceConfig {
     private String driver;
     private String url;
     private String userName;
@@ -65,11 +64,11 @@ public class DbJavaLearnConfig {
 
     @Bean
     public SqlSessionFactory javaLearnSqlSessionFactory(@Qualifier("javaLearnDataSource") DataSource dataSource) throws Exception {
-        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+        MybatisSqlSessionFactoryBean sqlSessionFactoryBean = new MybatisSqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(dataSource);
 
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath:mapper/javalearn/*.xml"));
+        sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath:mapper/*.xml"));
         return sqlSessionFactoryBean.getObject();
     }
 
