@@ -1,9 +1,12 @@
 package com.liucan.boot.web.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.liucan.boot.framework.annotation.LoginCheck;
 import com.liucan.boot.framework.annotation.UserId;
 import com.liucan.boot.framework.config.CachingConfig;
 import com.liucan.boot.persist.mybatis.mapper.CommonUserMapper;
+import com.liucan.boot.persist.mybatis.mode.CommonUser;
 import com.liucan.boot.service.db.JooqService;
 import com.liucan.boot.service.db.UserInfoJdbcTemplateService;
 import com.liucan.boot.service.db.UserInfoMybatisService;
@@ -45,7 +48,14 @@ public class MyRestController {
 
     @GetMapping("find_name1")
     public CommonResponse findName1(@RequestParam("user_id") Integer userId) {
-        System.out.println(commonUserMapper.selectByName("刘灿"));
+        Wrappers.update()
+                .set
+        Wrappers.<CommonUser>lambdaUpdate()
+                .set(CommonUser::getName, "liucan1")
+                .eq(CommonUser::getId, userId)
+        commonUserMapper.update()
+
+        System.out.println(JSONObject.toJSONString(commonUserMapper.selectByName("刘灿")));
         return CommonResponse.ok(commonUserMapper.selectList(null));
     }
 
