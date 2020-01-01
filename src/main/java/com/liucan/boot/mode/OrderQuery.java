@@ -17,5 +17,7 @@ public class OrderQuery {
     private String address;
     private Integer payType;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime time;
+    private LocalDateTime startTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime endTime;
 }

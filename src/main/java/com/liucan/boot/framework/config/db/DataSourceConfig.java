@@ -3,13 +3,14 @@ package com.liucan.boot.framework.config.db;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
+import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import lombok.Data;
+import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -46,7 +47,6 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @ConfigurationProperties(prefix = "java-learn")
 @PropertySource("classpath:properties/db.properties")
-@MapperScan(basePackages = "com.liucan.boot.persist.mybatis.mapper")
 public class DataSourceConfig {
     private String driver;
     private String url;
@@ -65,6 +65,16 @@ public class DataSourceConfig {
     }
 
     @Bean
+    public PaginationInterceptor paginationInterceptor() {
+        PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
+        // 设置请求的页面大于最大页后操作， true调回到首页，false 继续请求  默认false
+        // paginationInterceptor.setOverflow(false);
+        // 设置最大单页限制数量，默认 500 条，-1 不受限制
+        // paginationInterceptor.setLimit(500);
+        return paginationInterceptor;
+    }
+
+    @Bean
     public GlobalConfig globalConfig() {
         GlobalConfig globalConfig = new GlobalConfig();
         GlobalConfig.DbConfig dbConfig = new GlobalConfig.DbConfig();
@@ -74,10 +84,13 @@ public class DataSourceConfig {
     }
 
     @Bean
-    public SqlSessionFactory javaLearnSqlSessionFactory(@Qualifier("javaLearnDataSource") DataSource dataSource) throws Exception {
+    public SqlSessionFactory javaLearnSqlSessionFactory(@Qualifier("javaLearnDataSource") DataSource dataSource,
+                                                        GlobalConfig globalConfig,
+                                                        PaginationInterceptor paginationInterceptor) throws Exception {
         MybatisSqlSessionFactoryBean sqlSessionFactoryBean = new MybatisSqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(dataSource);
-
+        sqlSessionFactoryBean.setGlobalConfig(globalConfig);
+        sqlSessionFactoryBean.setPlugins(new Interceptor[]{paginationInterceptor});
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath:mapper/*.xml"));
         return sqlSessionFactoryBean.getObject();

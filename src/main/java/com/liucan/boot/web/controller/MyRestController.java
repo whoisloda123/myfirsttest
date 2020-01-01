@@ -1,5 +1,8 @@
 package com.liucan.boot.web.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.liucan.boot.framework.annotation.LoginCheck;
 import com.liucan.boot.framework.annotation.UserId;
 import com.liucan.boot.framework.config.CachingConfig;
@@ -17,9 +20,13 @@ import com.liucan.boot.service.redis.RedisTemplateService;
 import com.liucan.boot.web.common.CommonResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @Author: liucan
@@ -50,11 +57,29 @@ public class MyRestController {
     @GetMapping("queryOrder")
     public CommonResponse queryOrder(OrderQuery query) {
         //查询
+        List<UserOrder> userOrders = userOrderMapper.selectList(Wrappers.<UserOrder>lambdaQuery()
+                .in(CollectionUtils.isNotEmpty(query.getIds()), UserOrder::getId, query.getIds())
+                .eq(query.getUserId() != null, UserOrder::getUserId, query.getUserId())
+                .eq(StringUtils.isNotBlank(query.getAddress()), UserOrder::getAddress, query.getAddress())
+                .eq(query.getPayType() != null, UserOrder::getPayType, query.getPayType())
+                .le(query.getEndTime() != null, UserOrder::getCreateTime, query.getEndTime())
+                .ge(query.getStartTime() != null, UserOrder::getCreateTime, query.getStartTime()));
 
+        IPage<UserOrder> userOrderIPage1 = userOrderMapper.selectPageVo(new Page(1, 1), 2);
+
+        IPage<UserOrder> userOrderIPage = userOrderMapper.selectPage(new Page<>(1, 1), null);
+        List<UserOrder> records = userOrderIPage.getRecords();
+        long total = userOrderIPage.getTotal();
         //删除
 
         //更新
-
+//        userOrderMapper.update(userOrders.get(0), Wrappers.<UserOrder>lambdaQuery()
+//                .eq(query.getUserId() != null, UserOrder::getUserId, query.getUserId()));
+//
+//        userOrderMapper.update(null, Wrappers.<UserOrder>lambdaUpdate()
+//                .set(UserOrder::getAddress, "123")
+//                .set(UserOrder::getPrice, null)
+//                .eq(UserOrder::getId, 3));
         //插入
         UserOrder o = new UserOrder();
         o.setUserId(9);
