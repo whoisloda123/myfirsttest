@@ -1,6 +1,8 @@
 package com.liucan.boot.framework.config.db;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import lombok.Data;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -60,6 +62,15 @@ public class DataSourceConfig {
         druidDataSource.setPassword(password);
         druidDataSource.setDriverClassName(driver);
         return druidDataSource;
+    }
+
+    @Bean
+    public GlobalConfig globalConfig() {
+        GlobalConfig globalConfig = new GlobalConfig();
+        GlobalConfig.DbConfig dbConfig = new GlobalConfig.DbConfig();
+        dbConfig.setIdType(IdType.AUTO);
+        globalConfig.setDbConfig(dbConfig);
+        return globalConfig;
     }
 
     @Bean

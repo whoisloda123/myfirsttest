@@ -86,7 +86,11 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.3.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-typehandlers-jsr310</artifactId>
+            <version>1.0.2</version>
+        </dependency>
         <!--后续看一下druid数据库连接池的好处-->
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -192,7 +196,7 @@
             <plugin>
                 <groupId>org.mybatis.generator</groupId>
                 <artifactId>mybatis-generator-maven-plugin</artifactId>
-                <version>1.3.5</version>
+                <version>1.3.7</version>
                 <dependencies>
                 </dependencies>
                 <executions>

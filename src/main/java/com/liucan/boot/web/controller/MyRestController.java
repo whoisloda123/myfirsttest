@@ -1,12 +1,12 @@
 package com.liucan.boot.web.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.liucan.boot.framework.annotation.LoginCheck;
 import com.liucan.boot.framework.annotation.UserId;
 import com.liucan.boot.framework.config.CachingConfig;
+import com.liucan.boot.mode.OrderQuery;
 import com.liucan.boot.persist.mybatis.mapper.CommonUserMapper;
-import com.liucan.boot.persist.mybatis.mode.CommonUser;
+import com.liucan.boot.persist.mybatis.mapper.UserOrderMapper;
+import com.liucan.boot.persist.mybatis.mode.UserOrder;
 import com.liucan.boot.service.db.JooqService;
 import com.liucan.boot.service.db.UserInfoJdbcTemplateService;
 import com.liucan.boot.service.db.UserInfoMybatisService;
@@ -39,6 +39,7 @@ public class MyRestController {
     private final KafkaService kafkaService;
     private final JooqService jooqService;
     private final CommonUserMapper commonUserMapper;
+    private final UserOrderMapper userOrderMapper;
 
     @Cacheable(cacheNames = CachingConfig.ENTRY_TTL_1M, cacheManager = "redisCacheManager", keyGenerator = "keyGenerator")
     @GetMapping("find_name")
@@ -46,17 +47,20 @@ public class MyRestController {
         return userInfoJdbcTemplateService.queryUser(userId);
     }
 
-    @GetMapping("find_name1")
-    public CommonResponse findName1(@RequestParam("user_id") Integer userId) {
-        Wrappers.update()
-                .set
-        Wrappers.<CommonUser>lambdaUpdate()
-                .set(CommonUser::getName, "liucan1")
-                .eq(CommonUser::getId, userId)
-        commonUserMapper.update()
+    @GetMapping("queryOrder")
+    public CommonResponse queryOrder(OrderQuery query) {
+        //查询
 
-        System.out.println(JSONObject.toJSONString(commonUserMapper.selectByName("刘灿")));
-        return CommonResponse.ok(commonUserMapper.selectList(null));
+        //删除
+
+        //更新
+
+        //插入
+        UserOrder o = new UserOrder();
+        o.setUserId(9);
+        o.setAddress("sfsfsf");
+        userOrderMapper.insert(o);
+        return CommonResponse.ok();
     }
 
     @Cacheable("userInfo")
