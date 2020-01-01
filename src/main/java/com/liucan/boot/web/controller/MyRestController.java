@@ -63,28 +63,31 @@ public class MyRestController {
                 .eq(StringUtils.isNotBlank(query.getAddress()), UserOrder::getAddress, query.getAddress())
                 .eq(query.getPayType() != null, UserOrder::getPayType, query.getPayType())
                 .le(query.getEndTime() != null, UserOrder::getCreateTime, query.getEndTime())
-                .ge(query.getStartTime() != null, UserOrder::getCreateTime, query.getStartTime()));
+                .ge(query.getStartTime() != null, UserOrder::getCreateTime, query.getStartTime())
+                .select(UserOrder::getUserId, UserOrder::getAddress));
 
         IPage<UserOrder> userOrderIPage1 = userOrderMapper.selectPageVo(new Page(1, 1), 2);
 
         IPage<UserOrder> userOrderIPage = userOrderMapper.selectPage(new Page<>(1, 1), null);
-        List<UserOrder> records = userOrderIPage.getRecords();
-        long total = userOrderIPage.getTotal();
         //删除
 
         //更新
-//        userOrderMapper.update(userOrders.get(0), Wrappers.<UserOrder>lambdaQuery()
-//                .eq(query.getUserId() != null, UserOrder::getUserId, query.getUserId()));
-//
-//        userOrderMapper.update(null, Wrappers.<UserOrder>lambdaUpdate()
-//                .set(UserOrder::getAddress, "123")
-//                .set(UserOrder::getPrice, null)
-//                .eq(UserOrder::getId, 3));
+        UserOrder userOrder = new UserOrder();
+        userOrder.setAddress("nsfsfsfsfs");
+        userOrder.setPrice(1323);
+        userOrderMapper.update(userOrder, Wrappers.<UserOrder>lambdaUpdate()
+                .set(UserOrder::getOrderId, null)
+                .eq(UserOrder::getUserId, 3));
+
+        userOrderMapper.update(null, Wrappers.<UserOrder>lambdaUpdate()
+                .set(UserOrder::getAddress, "123")
+                .set(UserOrder::getPrice, null)
+                .eq(UserOrder::getUserId, 3));
         //插入
-        UserOrder o = new UserOrder();
-        o.setUserId(9);
-        o.setAddress("sfsfsf");
-        userOrderMapper.insert(o);
+//        UserOrder o = new UserOrder();
+//        o.setUserId(9);
+//        o.setAddress("sfsfsf");
+//        userOrderMapper.insert(o);
         return CommonResponse.ok();
     }
 

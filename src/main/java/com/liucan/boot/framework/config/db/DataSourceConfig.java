@@ -11,6 +11,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +48,7 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @ConfigurationProperties(prefix = "java-learn")
 @PropertySource("classpath:properties/db.properties")
+@MapperScan(basePackages = "com.liucan.boot.persist.mybatis.mapper")
 public class DataSourceConfig {
     private String driver;
     private String url;
