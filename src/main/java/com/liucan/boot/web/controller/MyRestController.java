@@ -72,23 +72,23 @@ public class MyRestController {
         //删除
 
         //更新
-        UserOrder userOrder = new UserOrder();
-        userOrder.setAddress("nsfsfsfsfs");
-        userOrder.setPrice(1323);
-        userOrderMapper.update(userOrder, Wrappers.<UserOrder>lambdaUpdate()
-                .set(UserOrder::getOrderId, null)
-                .eq(UserOrder::getUserId, 3));
-
-        userOrderMapper.update(null, Wrappers.<UserOrder>lambdaUpdate()
-                .set(UserOrder::getAddress, "123")
-                .set(UserOrder::getPrice, null)
-                .eq(UserOrder::getUserId, 3));
+//        UserOrder userOrder = new UserOrder();
+//        userOrder.setAddress("nsfsfsfsfs");
+//        userOrder.setPrice(1323);
+//        userOrderMapper.update(userOrder, Wrappers.<UserOrder>lambdaUpdate()
+//                .set(UserOrder::getOrderId, null)
+//                .eq(UserOrder::getUserId, 3));
+//
+//        userOrderMapper.update(null, Wrappers.<UserOrder>lambdaUpdate()
+//                .set(UserOrder::getAddress, "123")
+//                .set(UserOrder::getPrice, null)
+//                .eq(UserOrder::getUserId, 3));
         //插入
 //        UserOrder o = new UserOrder();
 //        o.setUserId(9);
 //        o.setAddress("sfsfsf");
 //        userOrderMapper.insert(o);
-        return CommonResponse.ok();
+        return CommonResponse.ok(query);
     }
 
     @Cacheable("userInfo")
