@@ -54,7 +54,7 @@ public class CommonConfig {
      * spring 对ThreadPoolExecutor的封装
      */
     @Bean
-    ThreadPoolTaskExecutor threadPoolTaskExecutor() {
+    public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setCorePoolSize(50);
         taskExecutor.setMaxPoolSize(500);
