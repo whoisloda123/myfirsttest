@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
+ * 紧急修复版本
  * @Author: liucan
  * @Date: 2018/7/6
  * @Description: @SpringBootApplication包括下面：
