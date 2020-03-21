@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * bootMessage编码器
- *
+ * test
  * @author liucan
  * @version 20-2-7
  */
