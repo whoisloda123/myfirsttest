@@ -30,7 +30,9 @@ public class CommonConfig {
      */
     @Bean
     public ObjectMapper jsonObjectMapper() {
-        ZoneOffset zoneOffset = OffsetDateTime.now().getOffset();
+        ZoneOffset zoneOffset = OffsetDateTime.
+                now()
+                .getOffset();
         return Jackson2ObjectMapperBuilder
                 .json()
                 .serializationInclusion(JsonInclude.Include.NON_NULL)
