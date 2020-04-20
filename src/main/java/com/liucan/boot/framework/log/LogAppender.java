@@ -2,26 +2,23 @@ package com.liucan.boot.framework.log;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
-import ch.qos.logback.core.filter.Filter;
-import ch.qos.logback.core.spi.FilterReply;
+import ch.qos.logback.core.ConsoleAppender;
 import com.liucan.boot.persist.mybatis.mode.SystemLogWithBLOBs;
-import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 /**
- * 日志收集
+ * 继承ConsoleAppender 重写append方法,收集系统中所有的 log.info error warn debug 等打印语句
  *
  * @author liucan
- * @version 2020/4/19
+ * @version 2020/4/20
  */
-@Slf4j
-public class LogFilter extends Filter<ILoggingEvent> {
+public class LogAppender extends ConsoleAppender<ILoggingEvent> {
 
     @Override
-    public FilterReply decide(ILoggingEvent event) {
+    protected void append(ILoggingEvent event) {
         StringBuilder exception = new StringBuilder();
         IThrowableProxy iThrowableProxy = event.getThrowableProxy();
         if (iThrowableProxy != null) {
@@ -42,6 +39,7 @@ public class LogFilter extends Filter<ILoggingEvent> {
         log.setThreadName(event.getThreadName());
         log.setClassName(event.getLoggerName());
         LoggerQueue.getInstance().offer(log);
-        return FilterReply.ACCEPT;
+        super.append(event);
     }
+
 }

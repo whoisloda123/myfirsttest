@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author liucan
@@ -35,7 +34,7 @@ public class LoggerQueue {
      * @param log 日志消息体
      */
     public void offer(SystemLogWithBLOBs log) {
-        blockingQueue.offer(log);
+        this.blockingQueue.offer(log);
     }
 
 
@@ -44,12 +43,7 @@ public class LoggerQueue {
      *
      * @return 日志消息体
      */
-    public SystemLogWithBLOBs poll() {
-        SystemLogWithBLOBs result = null;
-        try {
-            result = blockingQueue.poll(3, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-        }
-        return result;
+    public SystemLogWithBLOBs take() throws InterruptedException {
+        return this.blockingQueue.take();
     }
 }
