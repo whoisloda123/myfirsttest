@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -22,6 +23,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author liucan
  * @version 19-4-21
  */
+@Slf4j
 @Configuration
 public class CommonConfig {
 
@@ -30,6 +32,8 @@ public class CommonConfig {
      */
     @Bean
     public ObjectMapper jsonObjectMapper() {
+        log.error("error日志测试");
+        log.info("info日志测试");
         ZoneOffset zoneOffset = OffsetDateTime.
                 now()
                 .getOffset();
