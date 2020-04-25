@@ -60,11 +60,15 @@
         <!--</javaClientGenerator>-->
 
         <!--生成的表-->
-        <table tableName="common_user" enableCountByExample="false"
+        <table tableName="logging_event" enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
-        <table tableName="user_order" enableCountByExample="false"
+        <table tableName="logging_event_exception" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+        <table tableName="logging_event_property" enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
