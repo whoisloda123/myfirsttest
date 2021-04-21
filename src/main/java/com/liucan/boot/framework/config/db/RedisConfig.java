@@ -105,6 +105,19 @@ import java.util.Set;
  *   2.消息发布者，即publish客户端，无需独占链接
  *   3.Pub/Sub功能缺点是消息不是持久化的，发送就没有了
  *
+ * 九.redis 延迟队列
+ *   1.就是将消息放入zset里面，score为过期时间，然后有专门的线程去取最近的时间，拿出来消费，然后在删除掉
+ *   2.应用场景：下单成功，30分钟之后不支付自动取消，等
+ * 十。Redis的rehash为什么要渐进rehash，渐进rehash又是怎么实现的?
+ * 因为redis是单线程，当K很多时，如果一次性将键值对全部rehash，庞大的计算量会影响服务器性能，
+ * 甚至可能会导致服务器在一段时间内停止服务。不可能一步完成整个rehash操作，所以redis是分多次、渐进式的rehash。渐进性哈希分为两种：
+ * 1）操作redis时，额外做一步rehash
+ *
+ * 对redis做读取、插入、删除等操作时，会把位于table[dict->rehashidx]位置的链表移动到新的dictht中，然后把rehashidx做加一操作，移动到后面一个槽位。
+ *
+ * 2）后台定时任务调用rehash
+ *
+ * 后台定时任务rehash调用链，同时可以通过server.hz控制rehash调用频率
  * 二.spring-redis
  *  参考：https://www.cnblogs.com/EasonJim/p/7803067.html（spring-redis）
  *      http://blog.51cto.com/aiilive/1627455（spring-redis）

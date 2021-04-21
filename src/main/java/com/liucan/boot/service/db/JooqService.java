@@ -5,6 +5,8 @@ import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+
 import static com.liucan.boot.persist.jooq.javalearn.Tables.COMMON_USER;
 
 /**
@@ -14,7 +16,7 @@ import static com.liucan.boot.persist.jooq.javalearn.Tables.COMMON_USER;
 @Service
 public class JooqService {
     private final DSLContext javaLearnDSL;
-
+    HashMap<String , String> map = new HashMap<String , String>();
     public JooqService(@Qualifier("javaLearnDSL") DSLContext javaLearnDSL) {
         this.javaLearnDSL = javaLearnDSL;
     }
