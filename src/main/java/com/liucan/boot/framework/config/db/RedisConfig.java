@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 参考:https://blog.csdn.net/wuyangyang555/article/details/82152005
  *
  * 一.redis集群哨兵
  *  参考：http://youzhixueyuan.com/redis-high-availability.html
@@ -114,6 +113,8 @@ import java.util.Set;
  * 1）操作redis时，额外做一步rehash
  *
  * 对redis做读取、插入、删除等操作时，会把位于table[dict->rehashidx]位置的链表移动到新的dictht中，然后把rehashidx做加一操作，移动到后面一个槽位。
+   十一.reids底层数据结构和常用类型用的数据结构
+     https://cloud.tencent.com/developer/article/1690533
  *
  * 2）后台定时任务调用rehash
  *
